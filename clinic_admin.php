@@ -2100,10 +2100,10 @@ try {
         // Toggle Form Visibility
 
         function logout() {
-            alert("Logging out...");
+         
 
             // Replace current history state with login page to prevent going back
-            window.location.replace("login.php");
+            window.location.replace("logout.php");
 
             // Alternatively, to ensure the history state is cleared:
             window.history.pushState(null, null, window.location.href);
