@@ -127,64 +127,50 @@
     <!-- Eligibility Form -->
     <div class="form-container">
         <h2>Fit to Work</h2>
-        <form action="add_fit.php" method="POST">
+        <form action="add_fit.php" method="POST" enctype="multipart/form-data">
             <!-- Row 1 -->
-
+            <!-- Row 1 -->
             <div class="form-row">
 
                 <div class="form-group">
                     <label for="name">Employee No. :</label>
-                    <input type="text" id="emp" name="emp_no" required>
+                    <input type="text" id="emp" name="emp_no" value="" required>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Name :</label>
-                    <input type="text" id="age" name="name" required>
+                    <input type="text" id="age" name="name" value="" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Age :</label>
-                    <input type="text" id="age" name="age" required>
+                    <input type="text" id="age" name="age" value="" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Birthday :</label>
-                    <input type="text" id="bday" name="bday" required>
+                    <input type="text" id="bday" name="bday" value="" readonly>
                 </div>
 
-                <!--
-                <div class="form-group">
-                    <label for="name">Start Date</label>
-                    <input type="date" id="date" name="s_date" required>
-                </div>
 
-                <div class="form-group">
-                    <label for="name">End Date</label>
-                    <input type="date" id="date" name="e_date" required>
-                </div>
 
-                <div class="form-group">
-                    <label for="division">Time</label>
-                    <input type="time" id="time-in" name="time_in" required>
-                </div>
-    -->
             </div>
             <!-- Row 2 -->
             <div class="form-row">
 
                 <div class="form-group">
                     <label for="temp">Gender :</label>
-                    <input type="text" id="diagnosis" name="gender" required>
+                    <input type="text" id="diagnosis" name="gender" value="" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="temp">Section/Dept :</label>
-                    <input type="text" id="diagnosis" name="division" required>
+                    <input type="text" id="diagnosis" name="division" value="" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="temp">Company :</label>
-                    <input type="text" id="company" name="company" required>
+                    <input type="text" id="company" name="company" value="" readonly>
                 </div>
 
 
@@ -195,7 +181,7 @@
 
                 <div class="form-group">
                     <label for="name">Date :</label>
-                    <input type="date" id="date" name="date" required>
+                    <input type="date" id="date" name="f_date" required>
                 </div>
 
                 <div class="form-group">
@@ -215,7 +201,7 @@
 
                 <div class="form-group">
                     <label for="RR">Total Days of Absence</label>
-                    <input type="text" id="date_ofabs" name="date_ofabs" placeholder="(e.g. 7 days)" required>
+                    <input type="text" id="date_ofabs" name="nfa" placeholder="(e.g. 7 days)" required>
                 </div>
             </div>
 
@@ -224,18 +210,14 @@
 
                 <div class="form-group">
                     <label for="remarks">Reason :</label>
-                    <input type="text" id="text" name="remarks" rows="4" placeholder="Remarks" required>
+                    <input type="text" id="text" name="reason" rows="4" placeholder="Remarks" required>
                 </div>
 
 
-                <div class="form-group">
-                    <label for="medicine">Nurse on Duty :</label>
-                    <input type="text" id="nod" name="nod" placeholder="Nurse on duty" required>
-                </div>
 
                 <div class="form-group">
                     <label for="medicine">With/Without Medical Certificate :</label>
-                    <input type="file" id="nod" name="nod" placeholder="Nurse on duty" required>
+                    <input type="file" id="nod" name="with_without_cert" required>
                 </div>
 
                 <div class="form-group">
@@ -250,12 +232,12 @@
 
                 <div class="form-group">
                     <label for="remarks">Nurse on Duty :</label>
-                    <input id="text" id = "nod" name="nod" placeholder = "e.g. Name of Nurse on Duty" required>
+                    <input id="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" required>
                 </div>
 
                 <div class="form-group">
                     <label for="remarks">Note :</label>
-                    <input id="text" id = "note" name="note" placeholder = "Note" required>
+                    <input id="text" id="note" name="note" placeholder="Note" required>
                 </div>
 
             </div>
@@ -269,7 +251,7 @@
             <div class="btn-group">
                 <button type="submit" class="btn-submit">Submit</button>
                 <button type="button" class="btn-cancel"
-                    onclick="window.location.href='clinic_admin.php#';">Cancel</button>
+                    onclick="window.location.href='clinic_admin.php#form_section';">Cancel</button>
             </div>
         </form>
     </div>
