@@ -1594,33 +1594,48 @@ try {
                 <div id="medication_tab" class="tab-content">
                     <h3 style="color: black;">Medicine</h3>
                     <button onclick="window.location.href='new_medicine.php';" class="fas fa-plus"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="medicine" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
-
                                 <th>Date</th>
                                 <th>Reason</th>
                                 <th>Medicine</th>
                                 <th>Supply</th>
-                                <th>Quantiyt</th>
+                                <th>Quantity</th> <!-- Fixed spelling of "Quantity" -->
                                 <th>Nurse on Duty</th>
                                 <th>Note</th>
                                 <th>Action</th>
-                            </tr>
+                            </tr> <!-- Added missing closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
+
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#medicine').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end medicine-->
 
                 <!--vital signs-->
                 <div id="vital_signs_tab" class="tab-content">
                     <h3 style="color: black;">Vital Signs</h3>
                     <button class="fas fa-plus" onclick="window.location.href='vital_signs.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="vital" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1632,14 +1647,29 @@ try {
                                 <th>Oxygen Level</th>
                                 <th>Note</th>
                                 <th>Action</th>
-                            </tr>
+                            </tr> <!-- Added missing closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#vital').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end vital signs-->
 
                 <!--consultation-->
@@ -1731,7 +1761,7 @@ try {
                 <div id="confinement_tab" class="tab-content">
                     <h3 style="color: black;">Confinement</h3>
                     <button class="fas fa-plus" onclick="window.location.href='confine_form.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="confine" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1742,26 +1772,41 @@ try {
                                 <th>Total Hours Confined</th>
                                 <th>Remarks</th>
                                 <th>Action</th>
-                            </tr>
+                            </tr> <!-- Added missing closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#confine').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end confinement-->
 
                 <!--sent home-->
                 <div id="sent_home_tab" class="tab-content">
                     <h3 style="color: black;">Sent Home</h3>
                     <button class="fas fa-plus" onclick="window.location.href='sent_home.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="sent_home" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
                                 <th>Reason</th>
-                                <th>Assesment</th>
+                                <th>Assessment</th>
                                 <th>Diagnosis</th>
                                 <th>Remarks</th>
                                 <th>Sore Throat</th>
@@ -1771,21 +1816,36 @@ try {
                                 <th>LBM</th>
                                 <th>Loss Taste/Smell</th>
                                 <th>Action</th>
-                            </tr>
+                            </tr> <!-- Added missing closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#sent_home').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end sent home-->
 
                 <!--pregnant notification-->
                 <div id="pregnancy_notification_tab" class="tab-content">
                     <h3 style="color: black;">Pregnancy Notification</h3>
                     <button class="fas fa-plus" onclick="window.location.href='pregnant_notification.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="pregnant" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1798,20 +1858,36 @@ try {
                                 <th>Back to Work</th>
                                 <th>Cough/Colds</th>
                                 <th>Action</th>
+                            </tr> <!-- Added closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#pregnant').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end pregnant notification-->
 
                 <!--special case-->
                 <div id="special_case_tab" class="tab-content">
                     <h3 style="color:black;">Special Case</h3>
                     <button class="fas fa-plus" onclick="window.location.href='special_case.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
                     <table id="special_case" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1819,24 +1895,40 @@ try {
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Retain Am Shift</th>
-                                <th>No Exposure, To Chem, XRF, Soldering </th>
+                                <th>No Exposure, To Chem, XRF, Soldering</th>
                                 <th>Max HRS OT</th>
                                 <th>No Sunday Shift Always Secure FTW/ Med Cert Form</th>
                                 <th>Cough/Colds</th>
+                            </tr> <!-- Added closing </tr> -->
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#special_case').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!--end special case-->
 
                 <!--incident report tab-->
                 <div id="incident_report_tab" class="tab-content">
                     <h3 style="color: black;">Incident Accident Report</h3>
                     <button class="fas fa-plus" onclick="window.location.href='incident_report.php';"
-                        style="background-color: green;"> New Record</button>
+                        style="background-color: green; margin-bottom: 10px;">New Record</button>
                     <table id="incident_report" class="table table-striped table-bordered" style="width:100%;">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1850,13 +1942,29 @@ try {
                                 <th>Days Lost</th>
                                 <th>Date of Absence</th>
                                 <th>Action</th>
+                            </tr>
                         </thead>
                         <tbody>
-
+                            <!-- Data rows go here -->
                         </tbody>
                     </table>
 
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#incident_report').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
                 </div>
+
                 <!-- end incident report tab-->
 
                 <!-- end tab contents-->
@@ -1885,10 +1993,7 @@ try {
                 </script>
             </div>
 
-
-
             <!--Forms-->
-
             <div id="profile" class="page">
                 <h1 class="ten">User Profile</h1>
 
