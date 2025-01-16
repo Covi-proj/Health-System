@@ -152,8 +152,6 @@
                     <input type="text" id="bday" name="bday" value="" readonly>
                 </div>
 
-
-
             </div>
             <!-- Row 2 -->
             <div class="form-row">
@@ -180,31 +178,77 @@
             <div class="form-row">
 
                 <div class="form-group">
-                    <label for="name">EDC :</label>
+                    <label for="name">Case No. :</label>
                     <input type="date" id="date" name="date_of_visit" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Date Notification :</label>
+                    <label for="O2_sat">Diagnosis :</label>
                     <input type="date" id="time" name="time_of_visit" placeholder="Time of Visit" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Remarks :</label>
+                    <label for="O2_sat">Retain Am Shift :</label>
                     <input type="text" id="from" name="chief_complaint" placeholder="e.g. Headache" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="O2_sat">Start Leave :</label>
-                    <input type="date" id="to" name="time_of_released" placeholder="Supply" required>
-                </div>
 
-                <div class="form-group">
-                    <label for="O2_sat">Leave End :</label>
-                    <input type="date" id="to" name="time_of_released" placeholder="Supply" required>
-                </div>
 
             </div>
+
+            <div class=form-row>
+
+                <div class="form-group">
+
+                    <label for="O2_sat">Max 2hrs OT : <input type="checkbox" id="to" name="time_of_released"
+                            placeholder="Supply" required></label>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="O2_sat">No Exposure to Chem, XRF, Soldering : <input type="checkbox" id="to"
+                            name="time_of_released" placeholder="Supply" required></label>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="O2_sat">No Sunday Shift : <input type="checkbox" id="to" name="time_of_released"
+                            placeholder="Supply" required></label>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="O2_sat">FF UP To COM. Physician Monthly : <input type="checkbox" id="to"
+                            name="time_of_released" placeholder="Supply" required></label>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="O2_sat">Always Secure FTW/MED Cert From : <input type="checkbox" id="to"
+                            name="time_of_released" placeholder="Supply" required></label>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="O2_sat">Provide Chair : <input type="checkbox" id="to" name="time_of_released"
+                            placeholder="Supply" required></label>
+
+                </div>
+
+
+            </div>
+
             <!-- Row 4 -->
             <div class="form-row">
 
@@ -217,12 +261,12 @@
 
                 <div class="form-group">
                     <label for="remarks">Back to Work :</label>
-                    <input type = "date" id="text" id="nod" name="remarks" placeholder="Remarks" required>
+                    <input type="date" id="text" id="nod" name="remarks" placeholder="Remarks" required>
                 </div>
 
                 <div class="form-group">
                     <label for="remarks">Date of Apron Released :</label>
-                    <input type = "date" id="date" id="note" name="nod" placeholder="Note" required>
+                    <input type="date" id="date" id="note" name="nod" placeholder="Note" required>
                 </div>
 
             </div>
@@ -231,18 +275,21 @@
             <div class="form-row">
 
                 <div class="form-group">
-                    <label for="remarks">Date of Apron Returned :</label>
-                    <input type = "date" id="date" id="note" name="nod" placeholder="Note" required>
+                    <label for="remarks">Remarks :</label>
+                    <input type="date" id="date" id="note" name="nod" placeholder="Note" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="remarks">Date of Chair Released :</label>
-                    <input type = "date" id="date" id="note" name="nod" placeholder="Note" required>
+                    <label for="remarks">Status :</label>
+                    <input type="option" id="date" id="note" name="nod" placeholder="Note" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="remarks">Date of Chair Returned :</label>
-                    <input type = "date" id="date" id="note" name="nod" placeholder="Note" required>
+                    <label for="remarks">Controlled/Uncontrolled :</label>
+                    <select id="fruit" name="fruit">
+                        <option value="apple">Controlled</option>
+                        <option value="banana">Uncontrolled</option>
+                    </select>
                 </div>
 
 
