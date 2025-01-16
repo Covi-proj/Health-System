@@ -1338,7 +1338,9 @@ try {
                 <h1 style="color: black;">Clinical Forms</h1>
 
                 <div class="input-container">
-                    <!-- Employee No. and Name -->
+                    <!-- Employee No. and Name Row 1-->
+
+
                     <div class="input-group">
                         <label style="color: black;" for="emp_number">Employee No. :</label>
                         <input type="text" id="emp_number" name="emp_no" class="input-field">
@@ -1348,7 +1350,9 @@ try {
                         <input type="text" id="full_name" name="name" class="input-field">
                     </div>
 
-                    <!-- Age and Birthday -->
+
+                    <!-- Age and Birthday Row 2-->
+
                     <div class="input-group">
                         <label style="color: black;" for="age_input">Age :</label>
                         <input type="text" id="age_input" name="age_input" class="input-field">
@@ -1358,7 +1362,8 @@ try {
                         <input type="text" id="birthday_input" name="bday" class="input-field">
                     </div>
 
-                    <!-- Gender and Section/Dept. -->
+
+                    <!-- Gender and Section/Dept. Row 3-->
                     <div class="input-group">
                         <label style="color: black;" for="gender_input">Gender :</label>
                         <input type="text" id="gender_input" name="gender" class="input-field">
@@ -1369,11 +1374,13 @@ try {
                         <input type="text" id="section_input" name="division" class="input-field">
                     </div>
 
-                    <!-- Company -->
+                    <!-- Company Row 4-->
                     <div class="input-group">
                         <label style="color: black;" for="company_input">Company :</label>
                         <input type="text" id="company_input" name="company" class="input-field">
                     </div>
+
+
                 </div>
 
                 <script>
@@ -1586,7 +1593,8 @@ try {
                 <!--Medicine-->
                 <div id="medication_tab" class="tab-content">
                     <h3 style="color: black;">Medicine</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button onclick="window.location.href='new_medicine.php';" class="fas fa-plus"
+                        style="background-color: green;"> New Record</button>
                     <table id="medicine" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1611,7 +1619,8 @@ try {
                 <!--vital signs-->
                 <div id="vital_signs_tab" class="tab-content">
                     <h3 style="color: black;">Vital Signs</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='vital_signs.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="vital" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1721,7 +1730,8 @@ try {
                 <!--confinement-->
                 <div id="confinement_tab" class="tab-content">
                     <h3 style="color: black;">Confinement</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='confine_form.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="confine" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1745,7 +1755,8 @@ try {
                 <!--sent home-->
                 <div id="sent_home_tab" class="tab-content">
                     <h3 style="color: black;">Sent Home</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='sent_home.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="sent_home" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1773,7 +1784,8 @@ try {
                 <!--pregnant notification-->
                 <div id="pregnancy_notification_tab" class="tab-content">
                     <h3 style="color: black;">Pregnancy Notification</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='pregnant_notification.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="pregnant" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1798,7 +1810,8 @@ try {
                 <!--special case-->
                 <div id="special_case_tab" class="tab-content">
                     <h3 style="color:black;">Special Case</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='special_case.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="special_case" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -1822,7 +1835,8 @@ try {
                 <!--incident report tab-->
                 <div id="incident_report_tab" class="tab-content">
                     <h3 style="color: black;">Incident Accident Report</h3>
-                    <button class="fas fa-plus" style="background-color: green;"> New Record</button>
+                    <button class="fas fa-plus" onclick="window.location.href='incident_report.php';"
+                        style="background-color: green;"> New Record</button>
                     <table id="incident_report" class="table table-striped table-bordered" style="width:100%;">
                         <thead class="thead-dark">
                             <tr class="med">
@@ -2650,10 +2664,8 @@ try {
                 showPage('payment'); // Show the payment section
             } else if (hash === '#patient_pmr') {
                 showPage('patient_mr');
-            } else if (hash === '#balances') {
-                showPage('balances'); // Show the consultation section
-            } else if (hash === '#fit') {
-                showPage('fit'); // Show the fit section
+            } else if (hash === '#form_section') {
+                showPage('form_section'); // Show the fit section
             } else if (hash === '#preg') {
                 showPage('preg');// Show the pregnant notification
             }
