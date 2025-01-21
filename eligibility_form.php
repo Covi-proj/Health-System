@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +23,7 @@
             z-index: 1000;
         }
 
-
+    
         .form-container {
             background-color: white;
             padding: 30px;
@@ -33,7 +32,7 @@
             width: 90%;
             max-width: 900px;
             margin: auto;
-
+            
         }
 
         h2 {
@@ -58,7 +57,7 @@
             font-weight: bold;
         }
 
-        .logo {
+        .logo{
 
             font-weight: bold;
             font-size: 20px;
@@ -91,7 +90,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight:bold;
         }
 
         .btn-submit:hover {
@@ -113,7 +112,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -121,140 +119,92 @@
             <img src="unnamed.png" alt="Logo" style="height: 40px;">
             Health-e
         </div>
-
+       
     </nav>
 
     <!-- Eligibility Form -->
     <div class="form-container">
         <h2>Fit to Work</h2>
-        <form action="add_fit.php" method="POST" enctype="multipart/form-data">
+        <form action="add_fit.php" method="POST">
             <!-- Row 1 -->
-            <!-- Row 1 -->
+            
             <div class="form-row">
-
                 <div class="form-group">
-                    <label for="name">Employee No. :</label>
-                    <input type="text" id="emp" name="emp_no" value="" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="name">Name :</label>
-                    <input type="text" id="age" name="name" value="" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="name">Age :</label>
-                    <input type="text" id="age" name="age" value="" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="name">Birthday :</label>
-                    <input type="text" id="bday" name="bday" value="" readonly>
-                </div>
-
-
-
-            </div>
-            <!-- Row 2 -->
-            <div class="form-row">
-
-                <div class="form-group">
-                    <label for="temp">Gender :</label>
-                    <input type="text" id="diagnosis" name="gender" value="" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="temp">Section/Dept :</label>
-                    <input type="text" id="diagnosis" name="division" value="" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="temp">Company :</label>
-                    <input type="text" id="company" name="company" value="" readonly>
-                </div>
-
-
-            </div>
-
-            <!-- Row 3 -->
-            <div class="form-row">
-
-                <div class="form-group">
-                    <label for="name">Date :</label>
+                    <label for="name">Date</label>
                     <input type="date" id="date" name="f_date" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Time :</label>
-                    <input type="time" id="time" name="time" required>
+                    <label for="name">Start Date</label>
+                    <input type="date" id="date" name="s_date" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">From :</label>
-                    <input type="date" id="from" name="from_" required>
+                    <label for="name">End Date</label>
+                    <input type="date" id="date" name="e_date" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">To :</label>
-                    <input type="date" id="to" name="to_" required>
+                    <label for="division">Time</label>
+                    <input type="time" id="time-in" name="time_in" required>
                 </div>
+           
+    </div>
+            <!-- Row 2 -->
+            <div class="form-row">
+                
+                <div class="form-group">
+                    <label for="bp">Patient Name</label>
+                    <input type="text" id="patient_name" name="patient_name" placeholder="Patient Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="temp">Diagnosis</label>
+                    <input type="text" id="diagnosis" name="diagnosis" placeholder="Diagnosis" required>
+                </div>
+            </div>
 
+            <!-- Row 3 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="HR" >Eligibility</label>
+                    <select id="ftw" name="ftw" placeholder = "status" style ="height: 40px; border-radius: 10px;">
+                        <option value="Fit to Work">Fit to Work</option>
+                        <option value="Not Fit to Work">Not Fit to Work</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="RR">Total Days of Absence</label>
-                    <input type="text" id="date_ofabs" name="nfa" placeholder="(e.g. 7 days)" required>
+                    <input type="text" id="date_ofabs" name="date_ofabs" placeholder="(e.g. 7 days)" required>
+                </div>
+                <div class="form-group">
+                    <label for="O2_sat">Medicine</label>
+                    <input type="text" id="Med_name" name="Med_name" placeholder="(e.g. Paracetamol)" required>
                 </div>
             </div>
 
             <!-- Row 4 -->
             <div class="form-row">
-
                 <div class="form-group">
-                    <label for="remarks">Reason :</label>
-                    <input type="text" id="text" name="reason" rows="4" placeholder="Remarks" required>
+                    <label for="medicine">Nurse on Duty</label>
+                    <input type="text" id="nod" name="nod" placeholder="Nurse on duty" required>
                 </div>
-
-
-
                 <div class="form-group">
-                    <label for="medicine">With/Without Medical Certificate :</label>
-                    <input type="file" id="nod" name="with_without_cert" required>
+                <label for="remarks">Remarks</label>
+                <input id="text" name="remarks" rows="4" placeholder="Remarks" required>
                 </div>
-
-                <div class="form-group">
-                    <label for="remarks">Remarks :</label>
-                    <input id="text" name="remarks" rows="4" placeholder="Remarks" required>
-                </div>
-
-
-            </div>
-
-            <div class="form-row">
-
-                <div class="form-group">
-                    <label for="remarks">Nurse on Duty :</label>
-                    <input id="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="remarks">Note :</label>
-                    <input id="text" id="note" name="note" placeholder="Note" required>
-                </div>
-
             </div>
 
             <!-- Remarks -->
             <div class="form-group">
-
+               
             </div>
 
             <!-- Buttons -->
             <div class="btn-group">
                 <button type="submit" class="btn-submit">Submit</button>
-                <button type="button" class="btn-cancel"
-                    onclick="window.location.href='clinic_admin.php#form_section';">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="window.location.href='clinic_admin.php#fit';">Cancel</button>
             </div>
         </form>
     </div>
 </body>
-
 </html>
