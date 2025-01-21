@@ -67,17 +67,6 @@ try {
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <!--Dashboard duplicate -->
-
-
-    <!--new pmr-->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
-    <!--pmr-->
-
-
     <style>
         /* General Styles */
         body {
@@ -1132,150 +1121,6 @@ try {
             font-weight: bold;
             margin-left: 10px;
         }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0;
-            }
-        }
-
-        #fade {
-            animation: fadeOut 2s forwards;
-        }
-
-        .unique-tab {
-            overflow: hidden;
-            background-color: rgb(0, 0, 0);
-            margin-left: 10px;
-        }
-
-        /* Style the buttons inside the tab */
-        .page {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        /* Form Layout */
-        .form-page {
-            background-color: lightgray;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: rgb(11, 4, 4);
-        }
-
-        /* Form Layout */
-        .input-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            /* Automatically adjusts based on container size */
-            gap: 15px;
-            /* Sets space between input groups */
-            margin-bottom: 10px;
-        }
-
-        .input-group {
-            /* No need for width calculation here, as grid will handle layout */
-            box-sizing: border-box;
-        }
-
-        .input-field {
-            width: 100%;
-            /* Ensures input fields take up full container width */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-            /* Prevents padding and border from affecting width */
-        }
-
-        @media (max-width: 768px) {
-            .input-container {
-                grid-template-columns: 1fr;
-                /* Stacks all input groups vertically on small screens */
-            }
-        }
-
-
-
-        /* Tabs */
-        .tab-navigation {
-            margin-top: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .tab-button {
-            padding: 10px 20px;
-            background-color: rgb(192, 189, 189);
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: background-color 0.3s;
-            color: black;
-            font-weight: bold;
-        }
-
-        .tab-button:hover {
-            background-color: #ddd;
-        }
-
-        .tab-button.active {
-            background-color: rgb(17, 93, 19);
-            color: white;
-            font-weight: bold;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 4px;
-            margin-top: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .input-container {
-                flex-direction: column;
-            }
-
-            .input-group {
-                width: 100%;
-            }
-
-            .tab-navigation {
-                flex-direction: column;
-            }
-
-        }
-
-        /*form layout*/
     </style>
 
 </head>
@@ -1302,20 +1147,19 @@ try {
 
     <div class="container">
         <div class="sidebar">
-            <h1><i class="fas fa-chart-bar"></i> Reports</h1>
-
+            <h1><i class="fas fa-bars"></i> Menu</h1>
 
             <ul>
                 <li onclick="showPage('dashboard')">
                     <i class="fas fa-clipboard-list"></i> Dashboard
                 </li>
 
-                <li onclick="showPage('patient_mr')">
+                <li onclick="showPage('balances')">
                     <i class="fas fa-file-medical"></i> Patients Medical Record
                 </li>
 
-                <li onclick="showPage('form_section')">
-                    <i class="fas fa-pen"></i> Clinical Forms
+                <li onclick="showPage('fit')">
+                    <i class="fas fa-file-alt"></i> Fit To Work
                 </li>
 
                 <li onclick="showPage('payment')">
@@ -1333,667 +1177,7 @@ try {
 
         <div class="content">
 
-            <!--Forms-->
-            <div id="form_section" class="page">
-                <h1 style="color: black;">Clinical Forms</h1>
 
-                <div class="input-container">
-                    <!-- Employee No. and Name Row 1-->
-
-
-                    <div class="input-group">
-                        <label style="color: black;" for="emp_number">Employee No. :</label>
-                        <input type="text" id="emp_number" name="emp_no" class="input-field">
-                    </div>
-                    <div class="input-group">
-                        <label style="color: black;" for="full_name">Name :</label>
-                        <input type="text" id="full_name" name="name" class="input-field">
-                    </div>
-
-
-                    <!-- Age and Birthday Row 2-->
-
-                    <div class="input-group">
-                        <label style="color: black;" for="age_input">Age :</label>
-                        <input type="text" id="age_input" name="age_input" class="input-field">
-                    </div>
-                    <div class="input-group">
-                        <label style="color: black;" for="birthday_input">Birthday :</label>
-                        <input type="text" id="birthday_input" name="bday" class="input-field">
-                    </div>
-
-
-                    <!-- Gender and Section/Dept. Row 3-->
-                    <div class="input-group">
-                        <label style="color: black;" for="gender_input">Gender :</label>
-                        <input type="text" id="gender_input" name="gender" class="input-field">
-                    </div>
-
-                    <div class="input-group">
-                        <label style="color: black;" for="section_input">Section/Department :</label>
-                        <input type="text" id="section_input" name="division" class="input-field">
-                    </div>
-
-                    <!-- Company Row 4-->
-                    <div class="input-group">
-                        <label style="color: black;" for="company_input">Company :</label>
-                        <input type="text" id="company_input" name="company" class="input-field">
-                    </div>
-
-
-                </div>
-
-                <script>
-                    // Function to search for user data based on employee ID
-                    function searchUser() {
-                        const emp = document.getElementById('emp_number').value;
-
-                        // Ensure the emp field isn't empty before proceeding
-                        if (!emp) {
-                            alert("Please enter Employee No.");
-                            return;
-                        }
-
-                        // Perform an asynchronous request to the server
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'fetch_scan.php?emp_no=' + encodeURIComponent(emp), true);
-
-                        xhr.onload = function () {
-                            if (xhr.status === 200) {
-                                console.log('Response:', xhr.responseText); // Debug server response
-                                try {
-                                    const userData = JSON.parse(xhr.responseText);
-
-                                    // Update fields with received data
-                                    if (userData.error) {
-                                        alert(userData.error); // Handle the case where no user is found
-                                    } else {
-                                        document.getElementById('full_name').value = userData.name || '';
-                                        document.getElementById('age_input').value = userData.age || '';
-                                        document.getElementById('birthday_input').value = userData.bday || '';
-                                        document.getElementById('section_input').value = userData.division || '';
-                                        document.getElementById('gender_input').value = userData.gender || '';
-                                        document.getElementById('company_input').value = userData.company || '';
-                                    }
-                                } catch (e) {
-                                    console.error('Error parsing JSON response:', e);
-                                }
-                            } else {
-                                console.error('Error: HTTP status', xhr.status, xhr.statusText);
-                            }
-                        };
-
-                        xhr.onerror = function () {
-                            console.error('Network error');
-                        };
-
-                        xhr.send();
-                    }
-
-                    // Add keypress event to detect Enter key
-                    document.getElementById('emp_number').addEventListener('keypress', function (event) {
-                        if (event.key === 'Enter') {
-                            event.preventDefault(); // Prevent form submission
-                            searchUser(); // Call the function to fetch and auto-fill data
-                        }
-                    });
-                </script>
-
-
-
-                <!-- Tabs -->
-                <div class="tab-navigation">
-                    <button class="tab-button" onclick="openTabContent(event, 'fit_work_tab')">Fit to Work</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'medication_tab')">Medicine</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'vital_signs_tab')">Vital Signs</button>
-                    <button class="tab-button"
-                        onclick="openTabContent(event, 'consultation_tab')">Consultations</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'confinement_tab')">Confinement</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'sent_home_tab')">Sent Home</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'pregnancy_notification_tab')">Pregnant
-                        Notification</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'special_case_tab')">Special Case</button>
-                    <button class="tab-button" onclick="openTabContent(event, 'incident_report_tab')">Incident Accident
-                        Report</button>
-                </div>
-
-                <!-- Tab Contents -->
-
-                <!--fit to work-->
-                <div id="fit_work_tab" class="tab-content active">
-                    <h3 style="color: black;">Fit To Work</h3>
-                    <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
-                    <div class="container-pmr">
-                        <button id="toggleForm" onclick="window.location.href='eligibility_form.php';"
-                            class="fas fa-file"
-                            style="background-color: green; font-weight: bold; margin-bottom: 10px;">
-                            New Record
-                        </button>
-                        <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
-                  text-decoration: none; border-radius: 5px;">
-                            Export to Excel
-                        </a>
-
-                        <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                            <label for="date" style="margin-right: 0;">Display by Month:</label>
-                            <select class="date2" id="date2" name="date2" onchange="filterdate2()"
-                                style="margin-left: 0;">
-                                <option value="all">All</option>
-                                <option value="january">January</option>
-                                <option value="february">February</option>
-                                <option value="march">March</option>
-                                <option value="april">April</option>
-                                <option value="may">May</option>
-                                <option value="june">June</option>
-                                <option value="july">July</option>
-                                <option value="august">August</option>
-                                <option value="september">September</option>
-                                <option value="october">October</option>
-                                <option value="november">November</option>
-                                <option value="december">December</option>
-                            </select>
-                        </div>
-                        <table id="new" class="display" style="width: 100%; margin-top: 20px;">
-                            <thead>
-                                <tr class="med">
-                                    <th style="width: 150px;">Date</th>
-                                    <th>Time</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th style="width: 250px;">No. days Absent</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // Database connection settings
-                                $host = 'localhost';
-                                $db = 'e_system';
-                                $user = 'root';
-                                $pass = '';
-
-                                try {
-                                    // Create PDO instance
-                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                    // Query to fetch data from the "fit_to_work" table
-                                    $stmt = $pdo->prepare("SELECT * FROM tbl_fittowork");
-                                    $stmt->execute();
-
-                                    // Fetch all rows as an associative array
-                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                    // Check if data exists
-                                    if ($data) {
-                                        foreach ($data as $item) {
-                                            echo '<tr>';
-                                            echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['nfa'] ?? 'N/A') . '</td>';
-                                            echo '<td class="text-center">';
-                                            echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                            echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
-                                            echo '</td>';
-                                            echo '</tr>';
-                                        }
-                                    } else {
-                                        echo '<tr><td colspan="11" class="text-center">No records found</td></tr>';
-                                    }
-                                } catch (PDOException $e) {
-                                    echo '<tr><td colspan="11" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <script>
-                        $(document).ready(function () {
-                            $('#new').DataTable({
-                                responsive: true, // Makes the table responsive
-                                paging: true,    // Enables pagination
-                                searching: true, // Enables search bar
-                                ordering: true,  // Enables column sorting
-                                info: true       // Shows table information
-                            });
-                        });
-
-
-                        document.addEventListener("DOMContentLoaded", function () {
-                            // Set the current month as the default selected value
-
-                            const dateSelect = document.getElementById('date2');
-                            dateSelect.value = all;
-                            filterdate2();  // Apply the filter by current month on page load
-                        });
-
-                        function filterdate2() {
-                            const selectedMonth = document.getElementById('date2').value;
-                            const rows = document.querySelectorAll('#new tbody tr');
-
-                            rows.forEach(row => {
-                                const dateCell = row.cells[0].textContent.trim(); // Date cell is in the 4th column
-                                const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
-
-                                if (selectedMonth === 'all' || rowMonth === selectedMonth) {
-                                    row.style.display = '';  // Show the row
-                                } else {
-                                    row.style.display = 'none';  // Hide the row
-                                }
-                            });
-                        }
-
-                    </script>
-
-                </div>
-                <!--end fit to work-->
-
-                <!--Medicine-->
-                <div id="medication_tab" class="tab-content">
-                    <h3 style="color: black;">Medicine</h3>
-                    <button onclick="window.location.href='new_medicine.php';" class="fas fa-plus"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="medicine" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Date</th>
-                                <th>Reason</th>
-                                <th>Medicine</th>
-                                <th>Supply</th>
-                                <th>Quantity</th> <!-- Fixed spelling of "Quantity" -->
-                                <th>Nurse on Duty</th>
-                                <th>Note</th>
-                                <th>Action</th>
-                            </tr> <!-- Added missing closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#medicine').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end medicine-->
-
-                <!--vital signs-->
-                <div id="vital_signs_tab" class="tab-content">
-                    <h3 style="color: black;">Vital Signs</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='vital_signs.php';"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="vital" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Temperature</th>
-                                <th>Pulse Rate</th>
-                                <th>Respiratory</th>
-                                <th>Oxygen Level</th>
-                                <th>Note</th>
-                                <th>Action</th>
-                            </tr> <!-- Added missing closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#vital').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end vital signs-->
-
-                <!--consultation-->
-                <div id="consultation_tab" class="tab-content">
-                    <h3 style="color: black;">Consultation</h3>
-                    <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
-
-                    <div class="container-pmr">
-                        <button id="toggleForm" onclick="window.location.href='new_consultation.php';"
-                            class="fas fa-stethoscope"
-                            style="background-color: green; font-weight: bold; margin-bottom: 10px;">
-                            New Consultation
-                        </button>
-                        <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
-                  text-decoration: none; border-radius: 5px;">
-                            Export to Excel
-                        </a>
-                        <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                            <label for="date" style="margin-right: 0;">Display by Month:</label>
-                            <select class="date" id="date" name="date" onchange="filterdate()" style="margin-left: 0;">
-                                <option value="all">All</option>
-                                <option value="january">January</option>
-                                <option value="february">February</option>
-                                <option value="march">March</option>
-                                <option value="april">April</option>
-                                <option value="may">May</option>
-                                <option value="june">June</option>
-                                <option value="july">July</option>
-                                <option value="august">August</option>
-                                <option value="september">September</option>
-                                <option value="october">October</option>
-                                <option value="november">November</option>
-                                <option value="december">December</option>
-                            </select>
-                        </div>
-
-                        <table id="example" class="display" style="width:100%">
-                            <thead>
-                                <tr class="med">
-
-                                    <th>Date</th>
-                                    <th>Diagnosis</th>
-                                    <th>Physician</th>
-                                    <th>Remarks</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-
-                    </div> <!-- Closing container-pmr -->
-
-                    <!-- Include jQuery and DataTables JS -->
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            // Set the current month as the default selected value
-
-                            const dateSelect = document.getElementById('date');
-                            dateSelect.value = all;
-                            filterdate();  // Apply the filter by current month on page load
-                        });
-
-                        function filterdate() {
-                            const selectedMonth = document.getElementById('date').value;
-                            const rows = document.querySelectorAll('#example tbody tr');
-
-                            rows.forEach(row => {
-                                const dateCell = row.cells[3].textContent.trim(); // Date cell is in the 4th column
-                                const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
-
-                                if (selectedMonth === 'all' || rowMonth === selectedMonth) {
-                                    row.style.display = '';  // Show the row
-                                } else {
-                                    row.style.display = 'none';  // Hide the row
-                                }
-                            });
-                        }
-
-                    </script>
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-                </div>
-                <!--end consultation-->
-
-                <!--confinement-->
-                <div id="confinement_tab" class="tab-content">
-                    <h3 style="color: black;">Confinement</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='confine_form.php';"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="confine" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Date of Visit</th>
-                                <th>Time of Visit</th>
-                                <th>Chief Complaint</th>
-                                <th>Time of Released</th>
-                                <th>Total Hours Confined</th>
-                                <th>Remarks</th>
-                                <th>Action</th>
-                            </tr> <!-- Added missing closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#confine').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end confinement-->
-
-                <!--sent home-->
-                <div id="sent_home_tab" class="tab-content">
-                    <h3 style="color: black;">Sent Home</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='sent_home.php';"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="sent_home" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Reason</th>
-                                <th>Assessment</th>
-                                <th>Diagnosis</th>
-                                <th>Remarks</th>
-                                <th>Sore Throat</th>
-                                <th>Headache</th>
-                                <th>Fever</th>
-                                <th>Cough/Colds</th>
-                                <th>LBM</th>
-                                <th>Loss Taste/Smell</th>
-                                <th>Action</th>
-                            </tr> <!-- Added missing closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#sent_home').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end sent home-->
-
-                <!--pregnant notification-->
-                <div id="pregnancy_notification_tab" class="tab-content">
-                    <h3 style="color: black;">Pregnancy Notification</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='pregnant_notification.php';"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="pregnant" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>EDC</th>
-                                <th>Date Submited</th>
-                                <th>Remarks</th>
-                                <th>Start Leave</th>
-                                <th>Leave End</th>
-                                <th>Note</th>
-                                <th>Back to Work</th>
-                                <th>Cough/Colds</th>
-                                <th>Action</th>
-                            </tr> <!-- Added closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#pregnant').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end pregnant notification-->
-
-                <!--special case-->
-                <div id="special_case_tab" class="tab-content">
-                    <h3 style="color:black;">Special Case</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='special_case.php';"
-                        style="background-color: green; margin-bottom: 10px;"> New Record</button>
-                    <table id="special_case" class="table table-striped table-bordered" style="width:100%">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Case No.</th>
-                                <th>Date</th>
-                                <th>Diagnosis</th>
-                                <th>Retain Am Shift</th>
-                                <th>No Exposure, To Chem, XRF, Soldering</th>
-                                <th>Max HRS OT</th>
-                                <th>No Sunday Shift Always Secure FTW/ Med Cert Form</th>
-                                <th>Cough/Colds</th>
-                            </tr> <!-- Added closing </tr> -->
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#special_case').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!--end special case-->
-
-                <!--incident report tab-->
-                <div id="incident_report_tab" class="tab-content">
-                    <h3 style="color: black;">Incident Accident Report</h3>
-                    <button class="fas fa-plus" onclick="window.location.href='incident_report.php';"
-                        style="background-color: green; margin-bottom: 10px;">New Record</button>
-                    <table id="incident_report" class="table table-striped table-bordered" style="width:100%;">
-                        <thead class="thead-dark">
-                            <tr class="med">
-                                <th>Date of Incident</th>
-                                <th>Time of Incident</th>
-                                <th>Place of incident</th>
-                                <th>Nature of incident</th>
-                                <th>Part of the body Affected</th>
-                                <th>Remarks</th>
-                                <th>Status</th>
-                                <th>Days Lost</th>
-                                <th>Date of Absence</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data rows go here -->
-                        </tbody>
-                    </table>
-
-                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                    <!-- Initialize DataTables -->
-                    <script>
-                        $(document).ready(function () {
-                            $('#incident_report').DataTable({  // Corrected table ID
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                responsive: true
-                            });
-                        });
-                    </script>
-                </div>
-
-                <!-- end incident report tab-->
-
-                <!-- end tab contents-->
-                <script>
-                    function openTabContent(event, tabId) {
-                        var i, tabContents, tabButtons;
-
-                        // Hide all tab content
-                        tabContents = document.getElementsByClassName("tab-content");
-                        for (i = 0; i < tabContents.length; i++) {
-                            tabContents[i].style.display = "none";
-                        }
-
-                        // Remove 'active' class from all tab buttons
-                        tabButtons = document.getElementsByClassName("tab-button");
-                        for (i = 0; i < tabButtons.length; i++) {
-                            tabButtons[i].classList.remove("active");
-                        }
-
-                        // Display the clicked tab content
-                        document.getElementById(tabId).style.display = "block";
-
-                        // Add 'active' class to the clicked tab button
-                        event.currentTarget.classList.add("active");
-                    }
-                </script>
-            </div>
-
-            <!--Forms-->
             <div id="profile" class="page">
                 <h1 class="ten">User Profile</h1>
 
@@ -2039,17 +1223,7 @@ try {
                 <a class="right-content">
 
 
-                    <h1 id="fade" style="color: black;">Hello, <?php echo $user_name; ?></h1>
-
-                    <script>
-                        // Start fade after the DOM loads
-                        window.onload = function () {
-                            const element = document.getElementById('fade');
-                            element.style.transition = 'opacity 5s';
-                            element.style.opacity = '0';
-                        };
-                    </script>
-
+                    <h1 style="color: black;">Hello, <?php echo $user_name; ?></h1>
                     <div class="rounded-box">
                         <h1 class="student-count" style="font-size: 35px;">Dashboard</h1>
 
@@ -2063,8 +1237,7 @@ try {
                                 <button class="w3-bar-item w3-button tablink w3-red"
                                     onclick="openCity(event,'London')">Patients</button>
                                 <button class="w3-bar-item w3-button tablink"
-                                    onclick="openCity(event,'special_case')">Special
-                                    Case</button>
+                                    onclick="openCity(event,'special_case')">Special Case</button>
                                 <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Paris')">Fit to
                                     Work</button>
                                 <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Tokyo')">Medicine
@@ -2088,7 +1261,7 @@ try {
                                             <th>Temperature</th>
                                             <th>HR</th>
                                             <th>RR</th>
-                                            <th style="width: 100px;">O2 Sat</th>
+                                            <th style="width: 100px;">O2 Sat</th> 
                                             <th>Medicine</th>
                                             <th>Quantity</th>
                                             <th>Special Case</th>
@@ -2468,102 +1641,299 @@ try {
             <!--dashboard-->
 
             <!--PMR-->
+            <div id="balances" class="page">
 
 
-            <div id="patient_mr" class="page">
 
-                <h1 class="text-center" style="color: black;">Patients Medical Record</h1>
 
-                <!-- Search Bar -->
-                <div class="row mb-4">
-                    <div class="col-md-6 offset-md-3">
-                        <div class="input-group">
-                        </div>
-                    </div>
-                </div>
+                <h1 style="color: black;">Patients Medical Record</h1>
+                <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
 
-                <!-- Medical Records Table -->
-                <div class="table-responsive">
-                    <div class="table-responsive">
-                        <script
-                            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                        <select name="date" id="date">
-                            <option value="option1">Display by Date</option>
-                            <option value="option2">Display by Month</option>
-                            <option value="option3">Display by Year</option>
+                <div class="container-pmr">
+                    <button id="toggleForm" onclick="window.location.href='new_consultation.php';"
+                        class="fas fa-stethoscope"
+                        style="background-color: green; font-weight: bold; margin-bottom: 10px;">
+                        New Consultation
+                    </button>
+                    <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
+                  text-decoration: none; border-radius: 5px;">
+                        Export to Excel
+                    </a>
+                    <div class="filter" style="float: right; display: inline-flex; align-items: center;">
+                        <label for="date" style="margin-right: 0;">Display by Month:</label>
+                        <select class="date" id="date" name="date" onchange="filterdate()" style="margin-left: 0;">
+                            <option value="all">All</option>
+                            <option value="january">January</option>
+                            <option value="february">February</option>
+                            <option value="march">March</option>
+                            <option value="april">April</option>
+                            <option value="may">May</option>
+                            <option value="june">June</option>
+                            <option value="july">July</option>
+                            <option value="august">August</option>
+                            <option value="september">September</option>
+                            <option value="october">October</option>
+                            <option value="november">November</option>
+                            <option value="december">December</option>
                         </select>
-
-                        <table id="employeeTable" class="table table-bordered table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Name</th>
-                                    <th>Age</th>
-                                    <th>Birthdate</th>
-                                    <th>Gender</th>
-                                    <th>Department</th>
-                                    <th>Company</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recordsTable">
-                                <!-- Dynamic rows will be added here -->
-                                <?php
-                                // Database connection settings
-                                $host = 'localhost';
-                                $db = 'e_system';
-                                $user = 'root';
-                                $pass = '';
-
-                                try {
-                                    // Create PDO instance
-                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                    // Query to fetch data from the "employees" table
-                                    $stmt = $pdo->prepare("SELECT * FROM employees");
-                                    $stmt->execute();
-
-                                    // Fetch all rows as an associative array
-                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                    // Check if data exists
-                                    if ($data) {
-                                        foreach ($data as $item) {
-                                            echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '">';
-                                            echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['bday'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
-                                            echo '<td class="text-center">';
-                                            echo '<a href="view_record.php?emp_id=' . htmlspecialchars($item['emp_id']) . '" class="btn btn-sm btn-danger btn-action"><i class="fas fa-eye"></i> View Records</a>';
-                                            echo '</td>';
-                                            echo '</tr>';
-                                        }
-                                    } else {
-                                        // Adjusted colspan to match the number of columns in the table
-                                        echo '<tr><td colspan="8" class="text-center">No employees found</td></tr>';
-                                    }
-                                } catch (PDOException $e) {
-                                    // Adjusted colspan to match the number of columns in the table
-                                    echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                }
-                                ?>
-                            </tbody>
-                        </table>
                     </div>
+
+                    <table id="example" class="display" style="width:100%">
+                        <thead>
+                            <tr class="med">
+                                <th>Employee No.</th>
+                                <th>Patient Name</th>
+                                <th>Division</th>
+                                <th>Company</th>
+                                <th>Date</th>
+                                <th style="width: 180px;">Reason of Clinic Visit</th>
+                                <th>BP</th>
+                                <th>Temp</th>
+                                <th>HR</th>
+                                <th>RR</th>
+                                <th style="width: 120px;">O2 Sat</th>
+                                <th>Medicine</th>
+                                <th>Quantity</th>
+                                <th>Diagnosis</th>
+                                <th style="width: 180px;">Special Case</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
+
+                            try {
+                                // Create PDO instance
+                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                // Query to fetch data from the "consultation" table
+                                $stmt = $pdo->prepare("SELECT * FROM consultation");
+                                $stmt->execute();
+
+                                // Fetch all rows as an associative array
+                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Check if data exists
+                                if ($data) {
+                                    foreach ($data as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['emp'] ?? 'N/A') . '</td>';
+                                        echo '<td style="width: 150px;">' . htmlspecialchars($item['pnt_name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
+                                        echo '<td style="width: 100px;">' . htmlspecialchars($item['c_date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['rcv'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['temp'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['HR'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['RR'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['O2_sat'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['qty'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td class="text-center">';
+                                        echo '<a href="edit_consult.php?c_id=' . htmlspecialchars($item['c_id']) . '" class="link-dark fs-5"><i class="fas fa-pen-to-square fs-5 me-3"></i></a>';
+                                        echo '<a href="delete_patient.php?c_id=' . htmlspecialchars($item['c_id']) . '" class="link-dark fs-5"><i class="fas fa-trash fs-5"></i></a>';
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    echo '<tr><td colspan="13">No consultations found</td></tr>';
+                                }
+                            } catch (PDOException $e) {
+                                echo '<tr><td colspan="13">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+
+                </div> <!-- Closing container-pmr -->
+
+                <!-- Include jQuery and DataTables JS -->
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Set the current month as the default selected value
+
+                        const dateSelect = document.getElementById('date');
+                        dateSelect.value = all;
+                        filterdate();  // Apply the filter by current month on page load
+                    });
+
+                    function filterdate() {
+                        const selectedMonth = document.getElementById('date').value;
+                        const rows = document.querySelectorAll('#example tbody tr');
+
+                        rows.forEach(row => {
+                            const dateCell = row.cells[3].textContent.trim(); // Date cell is in the 4th column
+                            const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
+
+                            if (selectedMonth === 'all' || rowMonth === selectedMonth) {
+                                row.style.display = '';  // Show the row
+                            } else {
+                                row.style.display = 'none';  // Hide the row
+                            }
+                        });
+                    }
+
+                </script>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            </div> <!-- Closing balances -->
+
+            <!--PMR-->
+
+
+            <!--Fit to Work-->
+
+            <div id="fit" class="page">
+                <h1 style="color: black;">Fit To Work</h1>
+
+                <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
+                <div class="container-pmr">
+                    <button id="toggleForm" onclick="window.location.href='eligibility_form.php';" class="fas fa-file"
+                        style="background-color: green; font-weight: bold; margin-bottom: 10px;">
+                        New Record
+                    </button>
+                    <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
+                  text-decoration: none; border-radius: 5px;">
+                        Export to Excel
+                    </a>
+
+                    <div class="filter" style="float: right; display: inline-flex; align-items: center;">
+                        <label for="date" style="margin-right: 0;">Display by Month:</label>
+                        <select class="date2" id="date2" name="date2" onchange="filterdate2()" style="margin-left: 0;">
+                            <option value="all">All</option>
+                            <option value="january">January</option>
+                            <option value="february">February</option>
+                            <option value="march">March</option>
+                            <option value="april">April</option>
+                            <option value="may">May</option>
+                            <option value="june">June</option>
+                            <option value="july">July</option>
+                            <option value="august">August</option>
+                            <option value="september">September</option>
+                            <option value="october">October</option>
+                            <option value="november">November</option>
+                            <option value="december">December</option>
+                        </select>
+                    </div>
+                    <table id="new" class="display" style="width: 100%; margin-top: 20px;">
+                        <thead>
+                            <tr class="med">
+                                <th style="width: 150px;">Date</th>
+                                <th style="width: 160px;">Start Date</th>
+                                <th style="width: 150px;">End Date</th>
+                                <th>Time</th>
+                                <th style="width: 250px;">Patient Name</th>
+                                <th>Diagnosis</th>
+                                <th>Eligibility</th>
+                                <th style="width: 250px;">Total days of Absence</th>
+                                <th>Medicine</th>
+                                <th style="width: 200px;">Remarks</th>
+                                <th style="width: 250px;">Nurse on Duty</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
+
+                            try {
+                                // Create PDO instance
+                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                // Query to fetch data from the "fit_to_work" table
+                                $stmt = $pdo->prepare("SELECT * FROM fit_to_work");
+                                $stmt->execute();
+
+                                // Fetch all rows as an associative array
+                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Check if data exists
+                                if ($data) {
+                                    foreach ($data as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['f_date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['s_date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['e_date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['time_in'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['patient_name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['ftw'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['date_ofabs'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['Med_name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
+                                        echo '<td class="text-center">';
+                                        echo '<a href="edit_fit.php?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="delete_fit.php?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    echo '<tr><td colspan="11" class="text-center">No records found</td></tr>';
+                                }
+                            } catch (PDOException $e) {
+                                echo '<tr><td colspan="11" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
+                <script>
+                    $(document).ready(function () {
+                        $('#new').DataTable({
+                            responsive: true, // Makes the table responsive
+                            paging: true,    // Enables pagination
+                            searching: true, // Enables search bar
+                            ordering: true,  // Enables column sorting
+                            info: true       // Shows table information
+                        });
+                    });
+
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Set the current month as the default selected value
+
+                        const dateSelect = document.getElementById('date2');
+                        dateSelect.value = all;
+                        filterdate2();  // Apply the filter by current month on page load
+                    });
+
+                    function filterdate2() {
+                        const selectedMonth = document.getElementById('date2').value;
+                        const rows = document.querySelectorAll('#new tbody tr');
+
+                        rows.forEach(row => {
+                            const dateCell = row.cells[0].textContent.trim(); // Date cell is in the 4th column
+                            const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
+
+                            if (selectedMonth === 'all' || rowMonth === selectedMonth) {
+                                row.style.display = '';  // Show the row
+                            } else {
+                                row.style.display = 'none';  // Hide the row
+                            }
+                        });
+                    }
+
+                </script>
+
             </div>
 
-            <script>
-                $(document).ready(function () {
-                    $('#employeeTable').DataTable();
-                });
-            </script>
 
+            <!--Fit to Work-->
 
 
             <!--Medicine-->
@@ -2730,7 +2100,7 @@ try {
         // Toggle Form Visibility
 
         function logout() {
-
+         
 
             // Replace current history state with login page to prevent going back
             window.location.replace("logout.php");
@@ -2762,17 +2132,16 @@ try {
             }
         };
 
+
         window.onload = function () {
             const hash = window.location.hash;
 
             if (hash === '#payment') {
                 showPage('payment'); // Show the payment section
-            } else if (hash === '#patient_pmr') {
-                showPage('patient_mr');
-            } else if (hash === '#form_section') {
-                showPage('form_section'); // Show the fit section
-            } else if (hash === '#preg') {
-                showPage('preg');// Show the pregnant notification
+            } else if (hash === '#balances') {
+                showPage('balances'); // Show the balances section
+            } else if (hash === '#fit') {
+                showPage('fit'); // Show the fit section
             }
             else if (hash === '#profile') {
                 showPage('profile'); // Show the fit section
