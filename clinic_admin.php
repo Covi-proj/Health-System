@@ -1462,7 +1462,7 @@ try {
                 <div id="fit_work_tab" class="tab-content active">
                     <h3 style="color: black;">Fit To Work</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
-                    <div class="container-pmr">
+       
                         <button id="toggleForm"
                             onclick="window.location.href='eligibility_form.php?emp_id=' + document.getElementById('emp_id').value;"
                             class="fas fa-file"
@@ -1470,7 +1470,7 @@ try {
                             New Record
                         </button>
                         <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
-                  text-decoration: none; border-radius: 5px;">
+                        text-decoration: none; border-radius: 5px;">
                             Export to Excel
                         </a>
 
@@ -1557,7 +1557,7 @@ try {
                                             // Action buttons
                                             echo '<td class="text-center">';
                                             echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                            echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                            echo '<a href="delete_ft?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                             echo '</td>';
                                             echo '</tr>';
                                         }
@@ -1573,7 +1573,7 @@ try {
 
                             </tbody>
                         </table>
-                    </div>
+                   
                     <script>
                         $(document).ready(function () {
                             $('#new').DataTable({
@@ -1676,7 +1676,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_me?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -1770,7 +1770,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?vt_id=' . htmlspecialchars($item['vt_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?vt_id=' . htmlspecialchars($item['vt_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_vt.php?vt_id=' . htmlspecialchars($item['vt_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -1807,7 +1807,6 @@ try {
                     <h3 style="color: black;">Consultation</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
 
-                    <div class="container-pmr">
                         <button id="toggleForm"
                             onclick="window.location.href='new_consultation.php?emp_id=' + document.getElementById('emp_id').value;"
                             class="fas fa-stethoscope"
@@ -1815,7 +1814,7 @@ try {
                             New Consultation
                         </button>
                         <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
-                  text-decoration: none; border-radius: 5px;">
+                        text-decoration: none; border-radius: 5px;">
                             Export to Excel
                         </a>
                         <div class="filter" style="float: right; display: inline-flex; align-items: center;">
@@ -1889,7 +1888,7 @@ try {
                                             echo '<td>' . htmlspecialchars($item['status'] ?? 'N/A') . '</td>';
                                             echo '<td>';
                                             echo '<a href="?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                            echo '<a href="?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                            echo '<a href="delete_consult.php?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                             echo '</td>';
                                             echo '</tr>';
                                         }
@@ -1904,7 +1903,7 @@ try {
                             </tbody>
                         </table>
 
-                    </div> <!-- Closing container-pmr -->
+               
 
                     <!-- Include jQuery and DataTables JS -->
                     <script>
@@ -1993,7 +1992,7 @@ try {
                                         echo '<td class="text-center">';
 
                                         echo '<a href="?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href=delete_confine?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2089,7 +2088,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['loss_ts'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_sh?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2182,7 +2181,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['cdr'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_preg?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2228,10 +2227,10 @@ try {
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Retain Am Shift</th>
-                                <th>No Exposure, To Chem, XRF, Soldering</th>
+                                <th style = "width: 600px;">No Exposure, To Chem, XRF, Soldering</th>
                                 <th>Max HRS OT</th>
                                 <th>No Sunday Shift</th>
-                                <th>Always Secure FTW/ Med Cert Form</th>
+                                <th style = "width: 600px;">Always Secure FTW/ Med Cert Form</th>
                                 <th>FF Up to Secure FTW/MED Cert Form</th>
                                 <th>Provide Chair</th>
                                 <th>Remarks</th>
@@ -2281,7 +2280,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['cu'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?sc_id=' . htmlspecialchars($item['sc_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?sc_id=' . htmlspecialchars($item['sc_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_sc.php?sc_id=' . htmlspecialchars($item['sc_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2385,7 +2384,7 @@ try {
                                         // Action buttons
                                         echo '<td class="text-center">';
                                         echo '<a href="?ir_id=' . htmlspecialchars($item['ir_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="?ir_id=' . htmlspecialchars($item['ir_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_incident.php?ir_id=' . htmlspecialchars($item['ir_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
