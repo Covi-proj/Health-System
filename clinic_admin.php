@@ -1462,118 +1462,123 @@ try {
                 <div id="fit_work_tab" class="tab-content active">
                     <h3 style="color: black;">Fit To Work</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
-       
-                        <button id="toggleForm"
-                            onclick="window.location.href='eligibility_form.php?emp_id=' + document.getElementById('emp_id').value;"
-                            class="fas fa-file"
-                            style="background-color: green; font-weight: bold; margin-bottom: 10px;">
-                            New Record
-                        </button>
-                        <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
+
+                    <button id="toggleForm"
+                        onclick="window.location.href='eligibility_form.php?emp_id=' + document.getElementById('emp_id').value;"
+                        class="fas fa-file" style="background-color: green; font-weight: bold; margin-bottom: 10px;">
+                        New Record
+                    </button>
+                    <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                         text-decoration: none; border-radius: 5px;">
-                            Export to Excel
-                        </a>
+                        Export to Excel
+                    </a>
 
-                        <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                            <label for="date" style="margin-right: 0;">Display by Month:</label>
-                            <select class="date2" id="date2" name="date2" onchange="filterdate2()"
-                                style="margin-left: 0;">
-                                <option value="all">All</option>
-                                <option value="january">January</option>
-                                <option value="february">February</option>
-                                <option value="march">March</option>
-                                <option value="april">April</option>
-                                <option value="may">May</option>
-                                <option value="june">June</option>
-                                <option value="july">July</option>
-                                <option value="august">August</option>
-                                <option value="september">September</option>
-                                <option value="october">October</option>
-                                <option value="november">November</option>
-                                <option value="december">December</option>
-                            </select>
-                        </div>
-                        <table id="new" class="display" style="width: 100%; margin-top: 20px;">
-                            <thead>
-                                <tr class="med">
-                                    <th>Employee No.</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th>No. days Absent</th>
-                                    <th>File</th>
+                    <div class="filter" style="float: right; display: inline-flex; align-items: center;">
+                        <label for="date" style="margin-right: 0;">Display by Month:</label>
+                        <select class="date2" id="date2" name="date2" onchange="filterdate2()" style="margin-left: 0;">
+                            <option value="all">All</option>
+                            <option value="january">January</option>
+                            <option value="february">February</option>
+                            <option value="march">March</option>
+                            <option value="april">April</option>
+                            <option value="may">May</option>
+                            <option value="june">June</option>
+                            <option value="july">July</option>
+                            <option value="august">August</option>
+                            <option value="september">September</option>
+                            <option value="october">October</option>
+                            <option value="november">November</option>
+                            <option value="december">December</option>
+                        </select>
+                    </div>
+                    <table id="new" class="display" style="width: 100%; margin-top: 20px;">
+                        <thead>
+                            <tr class="med">
+                                <th>Employee No.</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>No. days Absent</th>
+                                <th>reason</th>
+                                <th>File</th>
+                                <th>Nurse on Duty</th>
+                                <th style="width :90px;">Note</th>
 
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // Database connection settings
-                                $host = 'localhost';
-                                $db = 'e_system';
-                                $user = 'root';
-                                $pass = '';
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
 
-                                try {
-                                    // Create PDO instance
-                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            try {
+                                // Create PDO instance
+                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                                    // Query to fetch data
-                                    $stmt = $pdo->prepare("
+                                // Query to fetch data
+                                $stmt = $pdo->prepare("
                                     SELECT tbl_fittowork.*, employees.emp_no, employees.name
                                     FROM tbl_fittowork
                                     LEFT JOIN employees ON tbl_fittowork.emp_id = employees.emp_id
                                     ");
-                                    $stmt->execute();
+                                $stmt->execute();
 
-                                    // Fetch all rows as an associative array
-                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                // Fetch all rows as an associative array
+                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                    // Check if data exists
-                                    if ($data) {
-                                        foreach ($data as $item) {
-                                            echo '<tr>';
-                                            echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['nfa'] ?? 'N/A') . '</td>';
+                                // Check if data exists
+                                if ($data) {
+                                    foreach ($data as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['nfa'] ?? 'N/A') . ' day/s </td>';
+                                        echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
 
-                                            // Handle file download
-                                            echo '<td>';
-                                            if (!empty($item['with_without_cert'])) {
-                                                $filePath = htmlspecialchars($item['with_without_cert']);
-                                                echo '<a href="' . $filePath . '" download>Download File</a>';
-                                            } else {
-                                                echo 'N/A';
-                                            }
-                                            echo '</td>';
-
-                                            // Action buttons
-                                            echo '<td class="text-center">';
-                                            echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                            echo '<a href="delete_ft?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
-                                            echo '</td>';
-                                            echo '</tr>';
+                                        // Handle file download
+                                        echo '<td>';
+                                        if (!empty($item['with_without_cert'])) {
+                                            $filePath = htmlspecialchars($item['with_without_cert']);  // Sanitize the file path
+                                            $fileName = basename($filePath);  // Extract just the file name
+                                            echo '<a href="download.php?file=' . urlencode($filePath) . '">' . $fileName . '</a>'; // Display the file name as the link text
+                                        } else {
+                                            echo 'N/A';  // Display 'N/A' if the file path is empty
                                         }
-                                    } else {
-                                        // Display "No records found"
-                                        echo '<tr><td colspan="9" class="text-center">No records found</td></tr>';
-                                    }
-                                } catch (PDOException $e) {
-                                    // Handle database errors
-                                    echo '<tr><td colspan="9" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                }
-                                ?>
+                                        echo '</td>';
 
-                            </tbody>
-                        </table>
-                   
+                                        echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
+                                        // Action buttons
+                                        echo '<td class="text-center">';
+                                        echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="delete_fit.php?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    // Display "No records found"
+                                    echo '<tr><td colspan="9" class="text-center">No records found</td></tr>';
+                                }
+                            } catch (PDOException $e) {
+                                // Handle database errors
+                                echo '<tr><td colspan="9" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            }
+                            ?>
+
+                        </tbody>
+                    </table>
+
                     <script>
                         $(document).ready(function () {
                             $('#new').DataTable({
@@ -1676,7 +1681,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="delete_me?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_medicine.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -1807,103 +1812,103 @@ try {
                     <h3 style="color: black;">Consultation</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
 
-                        <button id="toggleForm"
-                            onclick="window.location.href='new_consultation.php?emp_id=' + document.getElementById('emp_id').value;"
-                            class="fas fa-stethoscope"
-                            style="background-color: green; font-weight: bold; margin-bottom: 10px;">
-                            New Consultation
-                        </button>
-                        <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
+                    <button id="toggleForm"
+                        onclick="window.location.href='new_consultation.php?emp_id=' + document.getElementById('emp_id').value;"
+                        class="fas fa-stethoscope"
+                        style="background-color: green; font-weight: bold; margin-bottom: 10px;">
+                        New Consultation
+                    </button>
+                    <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                         text-decoration: none; border-radius: 5px;">
-                            Export to Excel
-                        </a>
-                        <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                            <label for="date" style="margin-right: 0;">Display by Month:</label>
-                            <select class="date" id="date" name="date" onchange="filterdate()" style="margin-left: 0;">
-                                <option value="all">All</option>
-                                <option value="january">January</option>
-                                <option value="february">February</option>
-                                <option value="march">March</option>
-                                <option value="april">April</option>
-                                <option value="may">May</option>
-                                <option value="june">June</option>
-                                <option value="july">July</option>
-                                <option value="august">August</option>
-                                <option value="september">September</option>
-                                <option value="october">October</option>
-                                <option value="november">November</option>
-                                <option value="december">December</option>
-                            </select>
-                        </div>
+                        Export to Excel
+                    </a>
+                    <div class="filter" style="float: right; display: inline-flex; align-items: center;">
+                        <label for="date" style="margin-right: 0;">Display by Month:</label>
+                        <select class="date" id="date" name="date" onchange="filterdate()" style="margin-left: 0;">
+                            <option value="all">All</option>
+                            <option value="january">January</option>
+                            <option value="february">February</option>
+                            <option value="march">March</option>
+                            <option value="april">April</option>
+                            <option value="may">May</option>
+                            <option value="june">June</option>
+                            <option value="july">July</option>
+                            <option value="august">August</option>
+                            <option value="september">September</option>
+                            <option value="october">October</option>
+                            <option value="november">November</option>
+                            <option value="december">December</option>
+                        </select>
+                    </div>
 
-                        <table id="example" class="display" style="width:100%">
-                            <thead>
-                                <tr class="med">
-                                    <th>Date</th>
-                                    <th>Employee No.</th>
-                                    <th>Name</th>
-                                    <th>Diagnosis</th>
-                                    <th>Physician</th>
-                                    <th>Remarks</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                // Database connection settings
-                                $host = 'localhost';
-                                $db = 'e_system';
-                                $user = 'root';
-                                $pass = '';
+                    <table id="example" class="display" style="width:100%">
+                        <thead>
+                            <tr class="med">
+                                <th>Date</th>
+                                <th>Employee No.</th>
+                                <th>Name</th>
+                                <th>Diagnosis</th>
+                                <th>Physician</th>
+                                <th>Remarks</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
 
-                                try {
-                                    // Create PDO instance
-                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            try {
+                                // Create PDO instance
+                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                                    // Query to fetch data
-                                    $stmt = $pdo->prepare("
+                                // Query to fetch data
+                                $stmt = $pdo->prepare("
                                     SELECT tbl_consultation.date, employees.emp_no, employees.name, tbl_consultation.diagnosis, 
                                     tbl_consultation.physician, tbl_consultation.remarks, tbl_consultation.status, 
                                     tbl_consultation.cons_id
                                     FROM tbl_consultation
                                     LEFT JOIN employees ON tbl_consultation.emp_id = employees.emp_id
                                      ");
-                                    $stmt->execute();
+                                $stmt->execute();
 
-                                    // Fetch all rows
-                                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                // Fetch all rows
+                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                                    // Check if data exists
-                                    if ($data) {
-                                        foreach ($data as $item) {
-                                            echo '<tr>';
-                                            echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['physician'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['status'] ?? 'N/A') . '</td>';
-                                            echo '<td>';
-                                            echo '<a href="?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                            echo '<a href="delete_consult.php?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
-                                            echo '</td>';
-                                            echo '</tr>';
-                                        }
-                                    } else {
-                                        echo '<tr><td colspan="8" class="text-center">No records found</td></tr>';
+                                // Check if data exists
+                                if ($data) {
+                                    foreach ($data as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['physician'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['status'] ?? 'N/A') . '</td>';
+                                        echo '<td>';
+                                        echo '<a href="?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="delete_consult.php?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '</td>';
+                                        echo '</tr>';
                                     }
-                                } catch (PDOException $e) {
-                                    echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                                } else {
+                                    echo '<tr><td colspan="8" class="text-center">No records found</td></tr>';
                                 }
-                                ?>
+                            } catch (PDOException $e) {
+                                echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            }
+                            ?>
 
-                            </tbody>
-                        </table>
+                        </tbody>
+                    </table>
 
-               
+
 
                     <!-- Include jQuery and DataTables JS -->
                     <script>
@@ -1992,7 +1997,7 @@ try {
                                         echo '<td class="text-center">';
 
                                         echo '<a href="?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href=delete_confine?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href=delete_confine.php?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2088,7 +2093,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['loss_ts'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="delete_sh?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_sh.php?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2181,7 +2186,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['cdr'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
-                                        echo '<a href="delete_preg?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '<a href="delete_preg.php?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
@@ -2227,10 +2232,10 @@ try {
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Retain Am Shift</th>
-                                <th style = "width: 600px;">No Exposure, To Chem, XRF, Soldering</th>
+                                <th style="width: 600px;">No Exposure, To Chem, XRF, Soldering</th>
                                 <th>Max HRS OT</th>
                                 <th>No Sunday Shift</th>
-                                <th style = "width: 600px;">Always Secure FTW/ Med Cert Form</th>
+                                <th style="width: 600px;">Always Secure FTW/ Med Cert Form</th>
                                 <th>FF Up to Secure FTW/MED Cert Form</th>
                                 <th>Provide Chair</th>
                                 <th>Remarks</th>
@@ -2374,12 +2379,16 @@ try {
                                         // Handle file download
                                         echo '<td>';
                                         if (!empty($item['file'])) {
-                                            $filePath = htmlspecialchars($item['file']);
-                                            echo '<a href="' . $filePath . '" download>Download File</a>';
+                                            $filePath = htmlspecialchars($item['file']);  // Sanitize the file path
+                                            $fileName = basename($filePath);  // Extract just the file name
+                            
+                                            // Display a link with the file name that opens in a new tab
+                                            echo '<a href="' . $filePath . '" target="_blank">View ' . $fileName . '</a>';
                                         } else {
-                                            echo 'N/A';
+                                            echo 'N/A';  // Display 'N/A' if the file is empty
                                         }
                                         echo '</td>';
+
 
                                         // Action buttons
                                         echo '<td class="text-center">';
@@ -2504,373 +2513,6 @@ try {
                         <p id="date-time" style="font-size: 20px; color: black; font-weight: bold;"></p>
 
 
-
-                        <div class="w3-container">
-                            <div class="w3-bar w3-black">
-
-                                <button class="w3-bar-item w3-button tablink w3-red"
-                                    onclick="openCity(event,'London')">Patients</button>
-                                <button class="w3-bar-item w3-button tablink"
-                                    onclick="openCity(event,'special_case')">Special
-                                    Case</button>
-                                <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Paris')">Fit to
-                                    Work</button>
-                                <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Tokyo')">Medicine
-                                    Inventory</button>
-
-                            </div>
-
-                            <div id="London" class="w3-container w3-border city"
-                                style="display:block; width: 100%; max-width: 1500px;">
-                                <h2>Patients</h2>
-
-                                <table id="table" class="table table-striped table-bordered" style="width:100%">
-                                    <thead class="thead-dark">
-                                        <tr class="med">
-                                            <th>Employee No.</th>
-                                            <th>Patient Name</th>
-                                            <th>Division</th>
-                                            <th>Company</th>
-                                            <th>Date</th>
-                                            <th>BP</th>
-                                            <th>Temperature</th>
-                                            <th>HR</th>
-
-                                            <th>RR</th>
-                                            <th style="width: 100px;">O2 Sat</th>
-                                            <th>Medicine</th>
-                                            <th>Quantity</th>
-                                            <th>Special Case</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- PHP code to populate rows dynamically -->
-                                        <?php
-                                        $host = 'localhost';
-                                        $db = 'e_system';
-                                        $user = 'root';
-                                        $pass = '';
-
-                                        try {
-                                            // Create PDO instance
-                                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                            // Get the current month and year
-                                            $currentMonth = date('m'); // e.g., 12 for December
-                                            $currentYear = date('Y'); // e.g., 2024
-                                        
-                                            // Query to fetch data from the "consultation" table for the current month and year
-                                            $stmt = $pdo->prepare("SELECT * FROM consultation WHERE MONTH(c_date) = :currentMonth AND YEAR(c_date) = :currentYear");
-                                            $stmt->bindParam(':currentMonth', $currentMonth, PDO::PARAM_INT);
-                                            $stmt->bindParam(':currentYear', $currentYear, PDO::PARAM_INT);
-                                            $stmt->execute();
-
-                                            // Fetch all rows as an associative array
-                                            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                            // Check if data exists
-                                            if ($data) {
-                                                foreach ($data as $item) {
-                                                    echo '<tr>';
-                                                    echo '<td style="width: 150px;">' . htmlspecialchars($item['emp'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="width: 150px;">' . htmlspecialchars($item['pnt_name'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="width: 100px;">' . htmlspecialchars($item['c_date'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['temp'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['HR'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['RR'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['O2_sat'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['qty'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                                    echo '</tr>';
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="12" class="text-center">No consultations found for the current month</td></tr>';
-                                            }
-                                        } catch (PDOException $e) {
-                                            echo '<tr><td colspan="12" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-
-                                <!-- Include DataTables Library -->
-                                <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-                                    rel="stylesheet">
-                                <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-                                <!-- Initialize DataTables -->
-                                <script>
-                                    $(document).ready(function () {
-                                        $('#table').DataTable({
-                                            paging: true,
-                                            searching: true,
-                                            ordering: true,
-                                            responsive: true
-                                        });
-                                    });
-                                </script>
-
-                            </div>
-
-                            <div id="special_case" class="w3-container w3-border city"
-                                style="display:none; width: 100%; max-width: 1500px;">
-                                <h2>Special Case</h2>
-
-                                <table id="special" class="display"
-                                    style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                                    <thead>
-                                        <tr class="med">
-                                            <th style="text-align: left; background-color: #d0daf9; color: black;">Date
-                                            </th>
-                                            <th style="text-align: left; background-color: #d0daf9; color: black;">
-                                                Employee No.</th>
-                                            <th style="text-align: left;  background-color: #d0daf9; color: black;">
-                                                Patient Name</th>
-                                            <th style="text-align: left;  background-color: #d0daf9; color: black;">
-                                                Special Case</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        // Database connection settings
-                                        $host = 'localhost';
-                                        $db = 'e_system';
-                                        $user = 'root';
-                                        $pass = '';
-
-                                        try {
-                                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                            // Query to fetch data from the "fit_to_work" table
-                                            $stmt = $pdo->prepare("SELECT emp, c_date, pnt_name, remarks FROM consultation");
-
-                                            $stmt->execute();
-
-                                            // Fetch rows as associative array
-                                            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                            if ($data) {
-                                                foreach ($data as $item) {
-                                                    echo '<tr>';
-                                                    echo '<td style = "font-weight: bold; color: white; background-color:#4169e1;">' . htmlspecialchars($item['c_date'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="width: 80px; font-weight: bold;">' . htmlspecialchars($item['emp'] ?? 'N/A') . '</td>';
-                                                    echo '<td style = "font-weight: bold; color: white; background-color:#4169e1;">' . htmlspecialchars($item['pnt_name'] ?? 'N/A') . '</td>';
-                                                    echo '<td style = "font-weight: bold; color: white;  background-color:#4169e1;">' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                                    echo '</tr>';
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="3" class="text-center">No records found for the current month</td></tr>';
-                                            }
-                                        } catch (PDOException $e) {
-                                            echo '<tr><td colspan="3" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-
-                                <!-- Include DataTables -->
-                                <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-                                    rel="stylesheet">
-                                <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-                                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-                                <script>
-                                    $(document).ready(function () {
-                                        // Destroy existing instance to prevent duplication
-                                        if ($.fn.DataTable.isDataTable('#table2')) {
-                                            $('#special').DataTable().destroy();
-                                        }
-
-                                        // Initialize DataTable
-                                        $('#special').DataTable({
-                                            destroy: true, // Ensure reinitialization is allowed
-                                            responsive: true,
-                                        });
-                                    });
-                                </script>
-
-                            </div>
-
-                            <div id="Paris" class="w3-container w3-border city"
-                                style="display:none; width: 100%; max-width: 1500px;">
-                                <h2>Fit To Work</h2>
-
-                                <table id="table2" class="display"
-                                    style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                                    <thead>
-                                        <tr class="med">
-                                            <th style="text-align: left;">Date</th>
-                                            <th style="text-align: left;">Start Date</th>
-                                            <th style="text-align: left;">End Date</th>
-                                            <th style="text-align: left;">Time</th>
-                                            <th style="width: 200px; text-align: left;">Patient Name</th>
-                                            <th style="text-align: left;">Diagnosis</th>
-                                            <th style="text-align: left;">Eligibility</th>
-                                            <th style="width: 250px; text-align: left;">Total days of absence</th>
-                                            <th style="text-align: left;">Medicine</th>
-                                            <th style="width: 150px; text-align: left;">Remarks</th>
-                                            <th style="text-align: center;">Nurse on Duty</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        // Database connection settings
-                                        $host = 'localhost';
-                                        $db = 'e_system';
-                                        $user = 'root';
-                                        $pass = '';
-
-                                        try {
-                                            // Create PDO instance
-                                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                            // Query to fetch data from the "fit_to_work" table
-                                            $stmt = $pdo->prepare("SELECT * FROM fit_to_work");
-                                            $stmt->execute();
-
-                                            // Fetch all rows as an associative array
-                                            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                            // Check if data exists
-                                            if ($data) {
-                                                foreach ($data as $item) {
-                                                    echo '<tr>';
-                                                    echo '<td>' . htmlspecialchars($item['f_date'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['s_date'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['e_date'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['time_in'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['patient_name'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['ftw'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['date_ofabs'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['Med_name'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                                    echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
-                                                    echo '</tr>';
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="11" class="text-center">No records found</td></tr>';
-                                            }
-                                        } catch (PDOException $e) {
-                                            echo '<tr><td colspan="11" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-
-                                <!-- Include DataTables -->
-                                <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-                                    rel="stylesheet">
-                                <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-                                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-                                <!-- Initialize DataTables -->
-                                <script>
-                                    $(document).ready(function () {
-                                        $('#table2').DataTable({
-                                            paging: true,
-                                            searching: true,
-                                            ordering: true,
-                                            responsive: true,
-                                            language: {
-                                                emptyTable: "No records available"
-                                            }
-                                        });
-                                    });
-                                </script>
-
-                            </div>
-
-                            <div id="Tokyo" class="w3-container w3-border city"
-                                style="display:none; width: 100%; max-width: 1500px;">
-                                <h2>Medicine Inventory</h2>
-
-                                <table id="table3" class="display"
-                                    style="width: 100%; margin-top: 20px; border-collapse: collapse; table-layout: fixed;">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: left; width: 33%;">Medicine</th>
-                                            <th style="text-align: left; width: 33%;">Quantity</th>
-                                            <th style="text-align: left; width: 33%;">Date Received</th>
-                                            <th style="text-align: left; width: 33%;">Receiver</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        // Database connection settings
-                                        $host = 'localhost';
-                                        $db = 'e_system';
-                                        $user = 'root';
-                                        $pass = '';
-
-                                        try {
-                                            // Create PDO instance
-                                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                            // Get the current month and year
-                                            $currentMonth = date('m');
-                                            $currentYear = date('Y');
-
-                                            // Query to fetch data from the "medicines" table for the current month and year
-                                            $stmt = $pdo->prepare("SELECT * FROM medicines WHERE MONTH(date_receive) = :currentMonth AND YEAR(date_receive) = :currentYear");
-                                            $stmt->bindParam(':currentMonth', $currentMonth, PDO::PARAM_INT);
-                                            $stmt->bindParam(':currentYear', $currentYear, PDO::PARAM_INT);
-                                            $stmt->execute();
-
-                                            // Fetch all rows as an associative array
-                                            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                            if ($data) {
-                                                foreach ($data as $item) {
-                                                    echo '<tr>';
-                                                    echo '<td style="text-align: left;">' . htmlspecialchars($item['Med_name'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="text-align: left;">' . htmlspecialchars($item['quantity'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="text-align: left;">' . htmlspecialchars($item['date_receive'] ?? 'N/A') . '</td>';
-                                                    echo '<td style="text-align: left;">' . htmlspecialchars($item['receiver'] ?? 'N/A') . '</td>';
-                                                    echo '</tr>';
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="3" class="text-center">No medicines received this month</td></tr>';
-                                            }
-                                        } catch (PDOException $e) {
-                                            echo '<tr><td colspan="3" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-
-                                <!-- Include DataTables -->
-                                <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
-                                    rel="stylesheet">
-                                <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-                                <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-                                <!-- Initialize DataTables -->
-                                <script>
-                                    $(document).ready(function () {
-                                        $('#table3').DataTable({
-                                            paging: true,
-                                            searching: true,
-                                            ordering: true,
-                                            responsive: true,
-                                            language: {
-                                                emptyTable: "No medicines available for the current month."
-                                            }
-                                        });
-                                    });
-                                </script>
-
-
-                            </div>
-
                         </div>
 
                         <script>
@@ -2917,8 +2559,6 @@ try {
             <!--dashboard-->
 
             <!--PMR-->
-
-
             <div id="patient_mr" class="page">
 
                 <h1 class="text-center" style="color: black;">Patients Medical Record</h1>
