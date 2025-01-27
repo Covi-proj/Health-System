@@ -108,7 +108,7 @@ try {
         }
 
         .navbar .logo {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -134,9 +134,9 @@ try {
         }
 
         .navbar .user-image {
-            width: 40px;
+            width: 30px;
             /* Adjust size as needed */
-            height: 40px;
+            height: 30px;
             border-radius: 50%;
             /* Makes it a circular image */
             object-fit: cover;
@@ -150,7 +150,7 @@ try {
         }
 
         .sidebar {
-            width: 250px;
+            width: 205px;
             background-color: #8B0000;
             color: white;
             padding: 20px;
@@ -625,7 +625,7 @@ try {
         /*end add modal*/
 
         table {
-            width: 100%;
+            width: 800px;
             border-collapse: collapse;
             margin-top: 20px;
         }
@@ -634,15 +634,18 @@ try {
         td {
             padding: 15px;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+
 
         }
 
         th {
-            background-color: #B22222;
+            background-color: rgb(7, 6, 6);
             color: white;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             border-top: 10px;
         }
 
@@ -655,7 +658,8 @@ try {
         }
 
         tr:hover td {
-            background-color: #e2e6ea;
+            background-color: rgb(73, 82, 89);
+            color: white;
         }
 
         .action-icons {
@@ -1185,11 +1189,16 @@ try {
         .input-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            /* Automatically adjusts based on container size */
             gap: 15px;
             /* Sets space between input groups */
-            margin-bottom: 10px;
+            margin: 20px;
+            /* Adds space outside the container */
+            padding: 20px;
+            /* Adds space inside the container */
+            background-color: #e6e6e6;
+            border-radius: 10px;
         }
+
 
         .input-group {
             /* No need for width calculation here, as grid will handle layout */
@@ -1204,6 +1213,7 @@ try {
             border-radius: 4px;
             font-size: 14px;
             box-sizing: border-box;
+
             /* Prevents padding and border from affecting width */
         }
 
@@ -1285,8 +1295,33 @@ try {
     <div class="navbar">
         <div class="left-content">
             <span class="logo">
-                <img src="unnamed.png" alt="Health-e Logo" class="navbar-logo">Health-e
+                <img src="unnamed.png" alt="Health-e Logo" class="navbar-logo">Health-e <p id="date-time"
+                    style="font-size: 16px; color: black; font-weight: light; margin-left: 20px;"></p>
             </span>
+
+            <script>
+                // Automatically display the first tab (London) when the page loads
+
+
+                function updateDateTime() {
+                    const now = new Date();
+                    let hours = now.getHours(); // Get hours in 24-hour format
+                    const minutes = String(now.getMinutes()).padStart(2, '0'); // Add leading zero
+                    const seconds = String(now.getSeconds()).padStart(2, '0'); // Add leading zero
+                    const date = now.toLocaleDateString(); // Get the current date in user's locale format
+
+                    const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM/PM
+                    hours = hours % 12 || 12; // Convert to 12-hour format (0 becomes 12)
+
+                    const timeString = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${amPm} ${date}`;
+                    document.getElementById('date-time').textContent = timeString;
+                }
+
+                setInterval(updateDateTime, 1000); // Update every second
+                updateDateTime();
+                // Initial call to display time immediately
+                // Fetch data from the backend
+            </script>
         </div>
         <div class="right-content">
             <div class="user-info">
@@ -1306,10 +1341,7 @@ try {
 
 
             <ul>
-                <li onclick="showPage('dashboard')">
-                    <i class="fas fa-clipboard-list"></i> Dashboard
-                </li>
-
+              
                 <li onclick="showPage('patient_mr')">
                     <i class="fas fa-file-medical"></i> Patients Medical Record
                 </li>
@@ -1333,11 +1365,12 @@ try {
 
         <div class="content">
 
+
             <!--Forms-->
             <div id="form_section" class="page">
                 <h1 style="color: black;">Clinical Forms</h1>
 
-                <div class="input-container">
+                <div class="input-container" id="formContainer">
                     <!-- Employee No. and Name Row 1-->
 
                     <input type="hidden" id="emp_id" name="emp_no" class="input-field">
@@ -1501,7 +1534,7 @@ try {
                                 <th>From</th>
                                 <th>To</th>
                                 <th>No. days Absent</th>
-                                <th>reason</th>
+                                <th>Reason</th>
                                 <th>File</th>
                                 <th>Nurse on Duty</th>
                                 <th style="width :90px;">Note</th>
@@ -2372,7 +2405,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['nature_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['part_b_a'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['status_'] ?? 'N/A') . '</td>';
+                                        echo '<td style = "background-color:#0044cc; color: white; font-weight: bold; border-bottom: 1px solid black;">' . htmlspecialchars($item['status_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['d_lost'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['d_absence'] ?? 'N/A') . '</td>';
 
@@ -2490,76 +2523,9 @@ try {
 
                 </div>
             </div>
-
-            <!--dashboard-->
-            <div id="dashboard" class="page active">
-                <a class="right-content">
-
-
-                    <h1 id="fade" style="color: black;">Hello, <?php echo $user_name; ?></h1>
-
-                    <script>
-                        // Start fade after the DOM loads
-                        window.onload = function () {
-                            const element = document.getElementById('fade');
-                            element.style.transition = 'opacity 5s';
-                            element.style.opacity = '0';
-                        };
-                    </script>
-
-                    <div class="rounded-box">
-                        <h1 class="student-count" style="font-size: 35px;">Dashboard</h1>
-
-                        <p id="date-time" style="font-size: 20px; color: black; font-weight: bold;"></p>
-
-
-                        </div>
-
-                        <script>
-                            // Automatically display the first tab (London) when the page loads
-                            window.onload = function () {
-                                document.getElementById("London").style.display = "block";
-                            }
-
-                            function openCity(evt, cityName) {
-                                var i, x, tablinks;
-                                x = document.getElementsByClassName("city");
-                                for (i = 0; i < x.length; i++) {
-                                    x[i].style.display = "none";
-                                }
-                                tablinks = document.getElementsByClassName("tablink");
-                                for (i = 0; i < tablinks.length; i++) {
-                                    tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
-                                }
-                                document.getElementById(cityName).style.display = "block";
-                                evt.currentTarget.className += " w3-red";
-                            }
-
-                            function updateDateTime() {
-                                const now = new Date();
-                                let hours = now.getHours(); // Get hours in 24-hour format
-                                const minutes = String(now.getMinutes()).padStart(2, '0'); // Add leading zero
-                                const seconds = String(now.getSeconds()).padStart(2, '0'); // Add leading zero
-                                const date = now.toLocaleDateString(); // Get the current date in user's locale format
-
-                                const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM/PM
-                                hours = hours % 12 || 12; // Convert to 12-hour format (0 becomes 12)
-
-                                const timeString = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${amPm} ${date}`;
-                                document.getElementById('date-time').textContent = timeString;
-                            }
-
-                            setInterval(updateDateTime, 1000); // Update every second
-                            updateDateTime();
-                            // Initial call to display time immediately
-                            // Fetch data from the backend
-                        </script>
-                    </div>
-            </div>
-            <!--dashboard-->
-
+         
             <!--PMR-->
-            <div id="patient_mr" class="page">
+            <div id="patient_mr" class="page active">
 
                 <h1 class="text-center" style="color: black;">Patients Medical Record</h1>
 
