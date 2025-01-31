@@ -163,16 +163,9 @@
             </div>
             <div class="container mt-5">
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal"
-                    style="font-weight: bold; margin-bottom: 10px; background-color:rgb(19, 128, 2);"><i
-                        class="fa fa-file-import"></i>
-                    Import Masterlist
-                </button>
 
-                <button type="button" id="btnAddEmployee" class="btn btn-primary"
-                    style="font-weight: bold; margin-bottom: 10px; "><i class="fa fa-user-plus"></i>
-                    Add Employee
-                </button>
+
+
                 <!-- Add Employee Button -->
 
             </div>
@@ -191,7 +184,8 @@
                         <div class="modal-body">
                             <form action="upload_excel.php" method="POST" enctype="multipart/form-data">
                                 <div class="mb-3">
-                                    <label for="dataFile" class="form-label">Select File(Accepted File: CVS Excel file)</label>
+                                    <label for="dataFile" class="form-label">Select File(Accepted File: CVS Excel
+                                        file)</label>
                                     <input type="file" class="form-control" name="dataFile" id="dataFile"
                                         accept=".csv, .xls, .xlsx" required>
                                 </div>
@@ -213,18 +207,45 @@
                     <label for="companyFilter" class="form-label">Filter:</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-building"></i></span>
-                        <select id="companyFilter" class="form-select" required>
-                            <option value="" disabled selected>--Select Company--</option>
-                            <option value="HEPC">HEPC</option>
-                            <option value="POWERLANE">POWERLANE</option>
-                            <option value="HR TEAM ASIA">HR TEAM ASIA</option>
-                            <option value="HERU">HERU</option>
-                            <option value="NCH">NCH</option>
-                            <option value="CSC">CSC</option>
-                            <option value="IISSI">IISSI</option>
-                            <option value="EIPC">IEPC</option>
-                        </select>
+                        <div class=form-row>
+                            <div class="form-group">
+                                <select id="companyFilter" class="form-select" required>
+                                    <option value="" disabled selected>--Select Company--</option>
+                                    <option value="HEPC">HEPC</option>
+                                    <option value="POWERLANE">POWERLANE</option>
+                                    <option value="HR TEAM ASIA">HR TEAM ASIA</option>
+                                    <option value="HERU">HERU</option>
+                                    <option value="NCH">NCH</option>
+                                    <option value="CSC">CSC</option>
+                                    <option value="IISSI">IISSI</option>
+                                    <option value="EIPC">IEPC</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row"></div>
+
+                        <div class="form-group" style="margin-left: 10px;">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#uploadModal"
+                                style="font-weight: bold; margin-bottom: 10px; background-color:rgb(19, 128, 2);"><i
+                                    class="fa fa-file-import"></i>
+                                Import Masterlist
+                            </button>
+                        </div>
+
+                        <div class="form-group" style="margin-left: 10px;">
+
+                            <button type="button" id="btnAddEmployee" class="btn btn-primary"
+                                style="font-weight: bold; margin-bottom: 10px; "><i class="fa fa-user-plus"></i>
+                                Add Employee
+                            </button>
+
+
+                        </div>
                     </div>
+
+
                 </div>
 
                 <table id="employeeTable" class="table table-striped table-bordered">
@@ -232,6 +253,9 @@
                         <tr>
                             <th>Employee No.</th>
                             <th>Name</th>
+                            <th>Age</th>
+                            <th>Birthday</th>
+                            <th>Gender</th>
                             <th>Section/Dept.</th>
                             <th>Company</th>
                             <th>Action</th>
@@ -261,9 +285,12 @@
                             if ($data) {
                                 foreach ($data as $item) {
                                     echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '">';
-                                    echo '<td>' . htmlspecialchars($item['emp_no']) . '</td>';
-                                    echo '<td>' . htmlspecialchars($item['name']) . '</td>';
-                                    echo '<td>' . htmlspecialchars($item['division']) . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['bday'] ?? 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
                                     echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
                                     echo '<td class="text-center">';
                                     echo '<a href="#" class="btn btn-sm btn-primary btn-edit btn-action" data-emp-id="' . htmlspecialchars($item['emp_id']) . '"><i class="fas fa-edit"></i> Edit</a>';
@@ -272,15 +299,21 @@
                                     echo '</tr>';
                                 }
                             } else {
-                                echo '<tr><td colspan="5" class="text-center">No employees found</td></tr>';
+                                // Adjusted colspan to match the number of columns in the table
+                                echo '<tr><td colspan="8" class="text-center">No employees found</td></tr>';
                             }
                         } catch (PDOException $e) {
-                            echo '<tr><td colspan="5" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            // Adjusted colspan to match the number of columns in the table
+                            echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
                         }
                         ?>
                     </tbody>
                 </table>
                 <p id="noDataMessage" style="display:none; text-align: center; color: red;">No data found</p>
+
+                <div id="companyCounts">
+                    <!-- List of company counts will be dynamically updated here -->
+                </div>
                 <a class="btn-cancel mt-3 d-inline-block" href="super-admin.php#balances">Back</a>
 
             </div>
@@ -312,6 +345,37 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="addage" class="form-label">Age:</label>
+                            <input type="number" class="form-control" id="addage" name="age" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addbday" class="form-label">Birthday</label>
+                            <input type="date" class="form-control" id="addbday" name="bday" required>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <input type="radio" id="male" name="gender" value="Male" required>
+                                    <label for="male">Male</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="female" name="gender" value="Memale">
+                                    <label for="female">Female</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="other" name="gender" value="other">
+                                    <label for="other">Other</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="mb-3">
                             <label for="addDivision" class="form-label">Section/Dept.:</label>
                             <input type="text" class="form-control" id="addDivision" name="division" required>
                         </div>
@@ -322,8 +386,8 @@
                             <select id="addCompany" name="company" class="form-select" required>
                                 <option>--Select Company--</option>
                                 <option value="HEPC">HEPC</option>
-                                <option value="POWERLANE">POWERLANE</option>
-                                <option value="HR TEAM ASIA">HR TEAM ASIA</option>
+                                <option value="POWERLANE">PRI</option>
+                                <option value="HR TEAM ASIA">HRT</option>
                                 <option value="HERU">HERU</option>
                                 <option value="NCH">NCH</option>
                                 <option value="CSC">CSC</option>
@@ -369,6 +433,34 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="editAge" class="form-label">Age</label>
+                            <input type="text" class="form-control" id="editAge" name="age" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editBday" class="form-label">Birthday</label>
+                            <input type="text" class="form-control" id="editBday" name="bday" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <input type="radio" id="male" name="gender" value="Male" required>
+                                    <label for="male">Male</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="female" name="gender" value="Female">
+                                    <label for="female">Female</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="other" name="gender" value="Other">
+                                    <label for="other">Other</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="editDivision" class="form-label">Section/Dept.</label>
                             <input type="text" class="form-control" id="editDivision" name="division" required>
                         </div>
@@ -386,6 +478,8 @@
             </div>
         </div>
     </div>
+
+
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -452,13 +546,29 @@
                 const empId = $(this).data('emp-id'); // Employee ID (stored in the button as data-attribute)
                 const empNo = row.find('td:eq(0)').text(); // Employee No.
                 const name = row.find('td:eq(1)').text(); // Name
-                const division = row.find('td:eq(2)').text(); // Section/Dept.
-                const company = row.find('td:eq(3)').text(); // Company
+                const age = row.find('td:eq(2)').text(); // Age (assumed to be in 3rd column)
+                const bday = row.find('td:eq(3)').text(); // Birthday (assumed to be in 4th column)
+                const gender = row.find('td:eq(4)').text(); // Gender (assumed to be in 5th column)
+                const division = row.find('td:eq(5)').text(); // Section/Dept. (assumed to be in 6th column)
+                const company = row.find('td:eq(6)').text(); // Company (assumed to be in 7th column)
 
                 // Populate modal fields
                 $('#editEmpId').val(empId);
                 $('#editEmpNo').val(empNo);
                 $('#editName').val(name);
+                $('#editAge').val(age);
+                $('#editBday').val(bday);
+
+                // Set gender
+                // Set gender radio button based on the value
+                if (gender.toLowerCase() === 'male') {
+                    $('#male').prop('checked', true);
+                } else if (gender.toLowerCase() === 'female') {
+                    $('#female').prop('checked', true);
+                } else {
+                    $('#other').prop('checked', true);
+                }
+
                 $('#editDivision').val(division);
                 $('#editCompany').val(company);
 
@@ -467,35 +577,57 @@
             });
         });
     </script>
-
-
+    <!--Set total entries each company-->
     <script>
-       $(document).ready(function () {
-    // Filter the table based on selected company
-    $('#companyFilter').change(function () {
-        var selectedCompany = $(this).val().toLowerCase(); // Get selected company
-        var rowsVisible = false; // Flag to check if any row is visible
+        $(document).ready(function () {
+            // Function to update counts for each company
+            function updateCompanyCounts() {
+                let counts = {};
 
-        // Filter table rows based on company
-        $('#employeeTable tbody tr').each(function () {
-            var company = $(this).data('company').toLowerCase(); // Get company of the current row
-            if (selectedCompany === "" || company === selectedCompany) {
-                $(this).show(); // Show row if it matches or no filter is selected
-                rowsVisible = true; // Mark that at least one row is visible
-            } else {
-                $(this).hide(); // Hide row if it doesn't match
+                // Count rows for each company
+                $('#employeeTable tbody tr').each(function () {
+                    const company = $(this).data('company');
+                    if (company) {
+                        counts[company] = (counts[company] || 0) + 1;
+                    }
+                });
+
+                // Display counts
+                $('#companyCounts').empty(); // Clear previous counts
+                for (const company in counts) {
+                    $('#companyCounts').append(`<li>${company}: ${counts[company]} employees</li>`);
+                }
             }
+
+            // Filter the table based on selected company
+            $('#companyFilter').change(function () {
+                const selectedCompany = $(this).val().toLowerCase(); // Get selected company
+                let rowsVisible = false; // Flag to check if any row is visible
+
+                // Filter table rows based on company
+                $('#employeeTable tbody tr').each(function () {
+                    const company = $(this).data('company').toLowerCase(); // Get company of the current row
+                    if (selectedCompany === '' || company === selectedCompany) {
+                        $(this).show(); // Show row if it matches or no filter is selected
+                        rowsVisible = true; // Mark that at least one row is visible
+                    } else {
+                        $(this).hide(); // Hide row if it doesn't match
+                    }
+                });
+
+                // Show or hide the "No data found" message based on visibility of rows
+                if (!rowsVisible) {
+                    $('#noDataMessage').show(); // Show the message if no rows are visible
+                } else {
+                    $('#noDataMessage').hide(); // Hide the message if there are visible rows
+                }
+
+                updateCompanyCounts(); // Update counts when filtering
+            });
+
+            // Initial count display
+            updateCompanyCounts();
         });
-
-        // Show or hide the "No data found" message based on visibility of rows
-        if (rowsVisible === false) {
-            $('#noDataMessage').show(); // Show the message if no rows are visible
-        } else {
-            $('#noDataMessage').hide(); // Hide the message if there are visible rows
-        }
-    });
-});
-
     </script>
 </body>
 
