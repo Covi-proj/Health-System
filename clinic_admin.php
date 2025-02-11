@@ -868,6 +868,7 @@ try {
         table {
             width: 100%;
             border-collapse: collapse;
+
         }
 
         th,
@@ -1333,7 +1334,7 @@ try {
         </div>
     </div>
 
-
+    <!--I was just learning how to manuallly to push through github-->
 
     <div class="container">
         <div class="sidebar">
@@ -1341,7 +1342,7 @@ try {
 
 
             <ul>
-              
+
                 <li onclick="showPage('patient_mr')">
                     <i class="fas fa-file-medical"></i> Patients Medical Record
                 </li>
@@ -1507,22 +1508,7 @@ try {
                     </a>
 
                     <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                        <label for="date" style="margin-right: 0;">Display by Month:</label>
-                        <select class="date2" id="date2" name="date2" onchange="filterdate2()" style="margin-left: 0;">
-                            <option value="all">All</option>
-                            <option value="january">January</option>
-                            <option value="february">February</option>
-                            <option value="march">March</option>
-                            <option value="april">April</option>
-                            <option value="may">May</option>
-                            <option value="june">June</option>
-                            <option value="july">July</option>
-                            <option value="august">August</option>
-                            <option value="september">September</option>
-                            <option value="october">October</option>
-                            <option value="november">November</option>
-                            <option value="december">December</option>
-                        </select>
+
                     </div>
                     <table id="new" class="display" style="width: 100%; margin-top: 20px;">
                         <thead>
@@ -1578,7 +1564,6 @@ try {
                                         echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['nfa'] ?? 'N/A') . ' day/s </td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
-
                                         // Handle file download
                                         echo '<td>';
                                         if (!empty($item['with_without_cert'])) {
@@ -1594,14 +1579,15 @@ try {
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         // Action buttons
                                         echo '<td class="text-center">';
-                                        echo '<a href="?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_fitwork.php?emp_id=' . $item['emp_id'] . '&f_id=' . $item['f_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
+
                                         echo '<a href="delete_fit.php?f_id=' . htmlspecialchars($item['f_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
                                     }
                                 } else {
                                     // Display "No records found"
-                                    echo '<tr><td colspan="9" class="text-center">No records found</td></tr>';
+                                    echo '<tr><td colspan="10" class="text-center">No records found</td></tr>';
                                 }
                             } catch (PDOException $e) {
                                 // Handle database errors
@@ -1713,7 +1699,9 @@ try {
                                         echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-                                        echo '<a href="?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+
+                                        echo '<a href="edit_meds.php?emp_id=' . $item['emp_id'] . '&med_id=' . $item['med_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
+
                                         echo '<a href="delete_medicine.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -1807,7 +1795,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['ol'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-                                        echo '<a href="?vt_id=' . htmlspecialchars($item['vt_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_vt.php?emp_id=' . $item['emp_id'] . '&vt_id=' . $item['vt_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_vt.php?vt_id=' . htmlspecialchars($item['vt_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -1856,22 +1844,6 @@ try {
                         Export to Excel
                     </a>
                     <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                        <label for="date" style="margin-right: 0;">Display by Month:</label>
-                        <select class="date" id="date" name="date" onchange="filterdate()" style="margin-left: 0;">
-                            <option value="all">All</option>
-                            <option value="january">January</option>
-                            <option value="february">February</option>
-                            <option value="march">March</option>
-                            <option value="april">April</option>
-                            <option value="may">May</option>
-                            <option value="june">June</option>
-                            <option value="july">July</option>
-                            <option value="august">August</option>
-                            <option value="september">September</option>
-                            <option value="october">October</option>
-                            <option value="november">November</option>
-                            <option value="december">December</option>
-                        </select>
                     </div>
 
                     <table id="example" class="display" style="width:100%">
@@ -1901,13 +1873,21 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data
-                                $stmt = $pdo->prepare("
-                                    SELECT tbl_consultation.date, employees.emp_no, employees.name, tbl_consultation.diagnosis, 
-                                    tbl_consultation.physician, tbl_consultation.remarks, tbl_consultation.status, 
-                                    tbl_consultation.cons_id
-                                    FROM tbl_consultation
-                                    LEFT JOIN employees ON tbl_consultation.emp_id = employees.emp_id
-                                     ");
+                                $query = "
+                                SELECT 
+                                tbl_consultation.date, 
+                                employees.emp_id, 
+                                employees.emp_no, 
+                                employees.name, 
+                                tbl_consultation.diagnosis, 
+                                tbl_consultation.physician, 
+                                tbl_consultation.remarks, 
+                                tbl_consultation.status, 
+                                tbl_consultation.cons_id
+                                FROM tbl_consultation
+                                LEFT JOIN employees ON tbl_consultation.emp_id = employees.emp_id
+                                ";
+                                $stmt = $pdo->prepare($query);
                                 $stmt->execute();
 
                                 // Fetch all rows
@@ -1925,7 +1905,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['status'] ?? 'N/A') . '</td>';
                                         echo '<td>';
-                                        echo '<a href="?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_cons.php?emp_id=' . urlencode($item['emp_id']) . '&cons_id=' . urlencode($item['cons_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_consult.php?cons_id=' . htmlspecialchars($item['cons_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -1937,6 +1917,7 @@ try {
                                 echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
                             }
                             ?>
+
 
                         </tbody>
                     </table>
@@ -2028,8 +2009,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['total_hrs'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-
-                                        echo '<a href="?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_confine.php?emp_id=' . $item['emp_id'] . '&con_id=' . $item['con_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href=delete_confine.php?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -2125,7 +2105,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['lbm'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['loss_ts'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-                                        echo '<a href="?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_sh.php?emp_id=' . $item['emp_id'] . '&sh_id=' . $item['sh_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_sh.php?sh_id=' . htmlspecialchars($item['sh_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -2218,7 +2198,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['dar'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['cdr'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-                                        echo '<a href="?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_preg.php?emp_id=' . $item['emp_id'] . '&pn_id=' . $item['pn_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_preg.php?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -2261,7 +2241,7 @@ try {
                             <tr class="med">
                                 <th>Case No.</th>
                                 <th>Employee No.</th>
-                                <th>Name</th>
+                                <th style="width: 100px;">Name</th>
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Retain Am Shift</th>
@@ -2317,7 +2297,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['status_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['cu'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
-                                        echo '<a href="?sc_id=' . htmlspecialchars($item['sc_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_sc.php?emp_id=' . $item['emp_id'] . '&sc_id=' . $item['sc_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_sc.php?sc_id=' . htmlspecialchars($item['sc_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -2422,10 +2402,9 @@ try {
                                         }
                                         echo '</td>';
 
-
                                         // Action buttons
                                         echo '<td class="text-center">';
-                                        echo '<a href="?ir_id=' . htmlspecialchars($item['ir_id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_incident.php?emp_id=' . $item['emp_id'] . '&ir_id=' . $item['ir_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_incident.php?ir_id=' . htmlspecialchars($item['ir_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
                                         echo '</tr>';
@@ -2523,7 +2502,7 @@ try {
 
                 </div>
             </div>
-         
+
             <!--PMR-->
             <div id="patient_mr" class="page active">
 
@@ -2542,11 +2521,6 @@ try {
                     <div class="table-responsive">
                         <script
                             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                        <select name="date" id="date">
-                            <option value="option1">Display by Date</option>
-                            <option value="option2">Display by Month</option>
-                            <option value="option3">Display by Year</option>
-                        </select>
 
                         <table id="employeeTable" class="table table-bordered table-striped">
                             <thead class="table-dark">
@@ -2625,148 +2599,231 @@ try {
             <div id="payment" class="page">
                 <h2 style="color:black; font-size: 30px;">Medicine Inventory</h2>
 
-
-
-                <div class="container-pmr">
-
-                    <!-- New Medicine Button -->
-                    <button id="toggleForm" onclick="window.location.href='new_med.php';" class="fas fa-pills"
-                        style="background-color: green; font-weight: bold; margin-bottom: 15px;"> New Medicine</button>
-                    <a href="export_med_inventory.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
+                <!-- New Medicine Button -->
+                <button id="toggleForm" onclick="window.location.href='new_med.php';" class="fas fa-pills"
+                    style="background-color: green; font-weight: bold; margin-bottom: 15px;"> New Medicine</button>
+                <a href="export_med_inventory.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                   text-decoration: none; border-radius: 5px;">
-                        Export to Excel
-                    </a>
+                    Export to Excel
+                </a>
+                <!--Count Medicines-->
+                <div class="modal-body">
+                    <?php
+                    // Database connection settings
+                    $host = 'localhost';
+                    $db = 'e_system';
+                    $user = 'root';
+                    $pass = '';
 
-                    <div class="filter" style="float: right; display: inline-flex; align-items: center;">
-                        <label for="date" style="margin-right: 0;">Display by Month:</label>
-                        <select class="date3" id="date3" name="date3" onchange="filterdate3()" style="margin-left: 0;">
-                            <option value="all">All</option>
-                            <option value="january">January</option>
-                            <option value="february">February</option>
-                            <option value="march">March</option>
-                            <option value="april">April</option>
-                            <option value="may">May</option>
-                            <option value="june">June</option>
-                            <option value="july">July</option>
-                            <option value="august">August</option>
-                            <option value="september">September</option>
-                            <option value="october">October</option>
-                            <option value="november">November</option>
-                            <option value="december">December</option>
-                        </select>
-                    </div>
-                    <!-- Success Message -->
-                    <?php if (isset($_GET['msg'])): ?>
-                        <div class="success-alert">
-                            <?php echo htmlspecialchars($_GET['msg']); ?>
-                        </div>
-                    <?php endif; ?>
+                    try {
+                        // Create PDO instance
+                        $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                    <!-- Medicine Table -->
-                    <table id="medicineTable" class="display">
-                        <thead>
-                            <tr>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
-                                <th>Date Received</th>
-                                <th>Receiver</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            // Database connection settings
-                            $host = 'localhost';
-                            $db = 'e_system';
-                            $user = 'root';
-                            $pass = '';
+                        // SQL query to calculate the total quantity of each Med_name in medicines
+                        $sqlMedicines = "SELECT Med_name, SUM(quantity) AS quantity FROM medicines GROUP BY Med_name";
+                        $stmtMedicines = $pdo->prepare($sqlMedicines);
+                        $stmtMedicines->execute();
+                        $medicinesData = $stmtMedicines->fetchAll(PDO::FETCH_ASSOC);
 
-                            try {
-                                // Create PDO instance
-                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        // SQL query to calculate the total quantity of each medicine in tbl_medicine
+                        $sqlTblMedicine = "SELECT medicine, SUM(quantity) AS quantity FROM tbl_medicine GROUP BY medicine";
+                        $stmtTblMedicine = $pdo->prepare($sqlTblMedicine);
+                        $stmtTblMedicine->execute();
+                        $tblMedicineData = $stmtTblMedicine->fetchAll(PDO::FETCH_ASSOC);
 
-                                // Query to fetch data from the "medicines" table
-                                $stmt = $pdo->prepare("SELECT * FROM medicines");
-                                $stmt->execute();
+                        // Create a map for tbl_medicine quantities
+                        $tblMedicineMap = [];
+                        foreach ($tblMedicineData as $row) {
+                            $tblMedicineMap[$row['medicine']] = $row['quantity'];
+                        }
 
-                                // Fetch all rows as an associative array
-                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        // Display the data in a horizontal scrollable list with subtraction logic
+                        echo "<div class='horizontal-scroll' style='display: flex; gap: 10px; max-width: 100%; overflow-x: auto; padding: 10px;'>";
+                        foreach ($medicinesData as $item) {
+                            $medName = $item['Med_name'];
+                            $medQuantity = $item['quantity'];
+                            $tblQuantity = $tblMedicineMap[$medName] ?? 0; // Default to 0 if no match in tbl_medicine
+                    
+                            // Subtract quantities
+                            $resultQuantity = $medQuantity - $tblQuantity;
 
-                                // Check if data exists
-                                if ($data) {
-                                    foreach ($data as $item) {
-                                        echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($item['Med_name']) . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['quantity']) . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['date_receive']) . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['receiver']) . '</td>';
-                                        echo '<td class="text-center">';
-                                        // Edit and Delete links with dynamic med_id
-                                        echo '<a href="edit_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark"><i class="fas fa-edit"></i></a>';
-                                        echo '<a href="delete_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark" style="margin-left: 10px;"><i class="fas fa-trash"></i></a>';
-                                        echo '</td>';
-                                        echo '</tr>';
-                                    }
-                                } else {
-                                    echo '<tr><td colspan="4" class="text-center">No medicines found</td></tr>';
-                                }
-                            } catch (PDOException $e) {
-                                echo '<tr><td colspan="4" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                            // Display each item
+                            echo "<div class='item' style='min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color:rgb(0, 0, 0); text-align: center; font-weight:bold; color: white;'>";
+                            echo htmlspecialchars($medName) . " — " . htmlspecialchars($resultQuantity);
+                            echo "</div>";
+                        }
+                        echo "</div>";
+                    } catch (PDOException $e) {
+                        echo 'Error: ' . $e->getMessage();
+                    }
+                    ?>
+
 
                 </div>
-                <script>
-                    $(document).ready(function () {
-                        $('#medicineTable').DataTable({
-                            responsive: true,
-                            paging: true,
-                            searching: true,
-                            ordering: true,
-                            info: true
-                        });
-                    });
+                <!--Count Medicines-->
+                <div class="filter" style="float: right; display: inline-flex; align-items: center;">
+                    <div class="form-row">
+
+                        <div class="form-gorup">
+                            <select class="date3" id="date3" name="date3" onchange="filterdate3()"
+                                style="margin-left: 0;">
+                                <option value="all">--Set by Month--</option>
+                                <option value="january">January</option>
+                                <option value="february">February</option>
+                                <option value="march">March</option>
+                                <option value="april">April</option>
+                                <option value="may">May</option>
+                                <option value="june">June</option>
+                                <option value="july">July</option>
+                                <option value="august">August</option>
+                                <option value="september">September</option>
+                                <option value="october">October</option>
+                                <option value="november">November</option>
+                                <option value="december">December</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <select id="companyFilter" class="form-select" required onchange="filterData()">
+                                <option value="">--Select Medicine--</option>
+                                <?php
+                                $conn = mysqli_connect("localhost", "root", "", "e_system");
+                                if (!$conn) {
+                                    die("Connection failed: " . mysqli_connect_error());
+                                }
+
+                                // Populate dropdown options
+                                $sqloption = "SELECT DISTINCT Med_name FROM medicines";
+                                $result = mysqli_query($conn, $sqloption);
+                                if ($result) {
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        $selected = (isset($_GET['Med_name']) && $_GET['Med_name'] === $row['Med_name']) ? 'selected' : '';
+                                        echo '<option value="' . htmlspecialchars($row['Med_name']) . '" ' . $selected . '>' . htmlspecialchars($row['Med_name']) . '</option>';
+                                    }
+                                } else {
+                                    echo '<option value="">No Medicines Found</option>';
+                                }
+                                ?>
+                            </select>
+
+                            <script>
+                                function filterData() {
+                                    const filterValue = document.getElementById('companyFilter').value;
+                                    window.location.href = `clinic_admin.php?Med_name=${encodeURIComponent(filterValue)}#payment`;
+                                }
+                            </script>
 
 
-                    document.addEventListener("DOMContentLoaded", function () {
-                        // Set the current month as the default selected value
+                        </div>
+                    </div>
+                </div>
+                <?php
+                // Initialize variables
+                $medFilter = isset($_GET['Med_name']) ? $_GET['Med_name'] : '';
+                $totalCount = 0;
 
-                        const dateSelect = document.getElementById('date3');
-                        dateSelect.value = all;
-                        filterdate3();  // Apply the filter by current month on page load
-                    });
+                try {
+                    // Query to fetch filtered or all medicines
+                    $query = $medFilter ? "SELECT * FROM medicines WHERE Med_name = :medFilter" : "SELECT * FROM medicines";
+                    $stmt = $pdo->prepare($query);
 
-                    function filterdate3() {
-                        const selectedMonth = document.getElementById('date3').value;
-                        const rows = document.querySelectorAll('#medicineTable tbody tr');
-
-                        rows.forEach(row => {
-                            const dateCell = row.cells[2].textContent.trim(); // Date cell is in the 4th column
-                            const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
-
-                            if (selectedMonth === 'all' || rowMonth === selectedMonth) {
-                                row.style.display = '';  // Show the row
-                            } else {
-                                row.style.display = 'none';  // Hide the row
-                            }
-                        });
+                    if ($medFilter) {
+                        $stmt->bindParam(':medFilter', $medFilter, PDO::PARAM_STR);
                     }
 
+                    $stmt->execute();
+                    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                    // Auto-hide success message after 5 seconds
-                    setTimeout(function () {
-                        const successMessage = document.getElementById('successMessage');
-                        if (successMessage) {
-                            successMessage.style.display = 'none';
+                    // Count total rows
+                    $totalCount = $stmt->rowCount();
+                } catch (PDOException $e) {
+                    echo 'Error: ' . $e->getMessage();
+                }
+                ?>
+
+                <!-- Medicine Table -->
+                <table id="medicineTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Quantity</th>
+                            <th>Date Received</th>
+                            <th>Receiver</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ($data) {
+                            foreach ($data as $item) {
+                                echo '<tr>';
+                                echo '<td>' . htmlspecialchars($item['Med_name']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['quantity']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['date_receive']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['receiver']) . '</td>';
+                                echo '<td class="text-center">';
+                                echo '<a href="edit_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark"><i class="fas fa-edit"></i></a>';
+                                echo '<a href="delete_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark" style="margin-left: 10px;"><i class="fas fa-trash"></i></a>';
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                        } else {
+                            echo '<tr><td colspan="5" class="text-center">No medicines found</td></tr>';
                         }
-                    }, 5000);
+                        ?>
+                    </tbody>
+                </table>
 
-
-                </script>
             </div>
+            <script>
+                $(document).ready(function () {
+                    $('#medicineTable').DataTable({
+                        responsive: true,
+                        paging: true,
+                        searching: true,
+                        ordering: true,
+                        info: true
+                    });
+                });
+
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Set the current month as the default selected value
+
+                    const dateSelect = document.getElementById('date3');
+                    dateSelect.value = all;
+                    filterdate3();  // Apply the filter by current month on page load
+                });
+
+                function filterdate3() {
+                    const selectedMonth = document.getElementById('date3').value;
+                    const rows = document.querySelectorAll('#medicineTable tbody tr');
+
+                    rows.forEach(row => {
+                        const dateCell = row.cells[2].textContent.trim(); // Date cell is in the 4th column
+                        const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
+
+                        if (selectedMonth === 'all' || rowMonth === selectedMonth) {
+                            row.style.display = '';  // Show the row
+                        } else {
+                            row.style.display = 'none';  // Hide the row
+                        }
+                    });
+                }
+
+
+                // Auto-hide success message after 5 seconds
+                setTimeout(function () {
+                    const successMessage = document.getElementById('successMessage');
+                    if (successMessage) {
+                        successMessage.style.display = 'none';
+                    }
+                }, 5000);
+
+
+            </script>
+
             <!--medicine-->
         </div>
 
