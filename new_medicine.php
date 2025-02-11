@@ -1,72 +1,3 @@
-<?php
-
-include('edit_delete_dbconn.php');
-
-// Check if 'emp_id' and 'f_id' are passed in the URL
-if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
-    $emp_id = $_GET['emp_id'];  // Get the emp_id from the query string
-    $med_id = $_GET['med_id'];    // Get the f_id from the query string
-
-    // Initialize variables to hold the employee data
-    $emp_no = $name = $age = $bday = $gender = $division = $company = '';
-    $date = $reason = $medicine = $supply = $quantity = $nod = $note = '';
-
-    try {
-        // Fetch the employee data from the database
-        $stmt = $conn->prepare("SELECT * FROM employees WHERE emp_id = :emp_id");
-        $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $fetch_emp = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($fetch_emp) {
-            // Populate form fields with fetched employee data
-            $emp_no = $fetch_emp['emp_no'];
-            $name = $fetch_emp['name'];
-            $age = $fetch_emp['age'];
-            $bday = $fetch_emp['bday'];
-            $gender = $fetch_emp['gender'];
-            $division = $fetch_emp['division'];
-            $company = $fetch_emp['company'];
-        } else {
-            echo "No Employee found with this ID.";
-            exit;
-        }
-
-        // Fetch fit-to-work data for the employee using f_id
-        $stmt = $conn->prepare("SELECT * FROM tbl_medicine WHERE med_id = :med_id ORDER BY med_id DESC LIMIT 1");
-        $stmt->bindParam(':med_id', $med_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $fetch_med = $stmt->fetch(PDO::FETCH_ASSOC);  // Changed to FETCH_ASSOC to ensure array
-
-        if ($fetch_med) {
-            // Populate form fields with fetched fit-to-work data
-            $date = $fetch_med['date'];
-            $reason = $fetch_med['reason'];
-            $medicine = $fetch_med['medicine'];
-            $supply = $fetch_med['supply'];
-            $quantity = $fetch_med['quantity'];
-            $nod = $fetch_med['nod'];
-            $note = $fetch_med['note'];
-
-         
-        } else {
-            // Handle case where no fit-to-work data is found
-            $nfa = 'Not Available';  // Example for placeholder
-        }
-
-    } catch (PDOException $e) {
-        echo "Database Error: " . $e->getMessage();
-        exit;
-    }
-} else {
-    echo '<div style="padding: 20px; background-color: #fff3cd; color: #856404; border-radius: 5px; border: 1px solid #ffeeba; font-family: Arial, sans-serif; text-align: center; font-size: 16px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <strong>Warning:</strong> No Employee ID or Fit-to-Work ID provided.
-</div>';
-    exit;
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -193,11 +124,52 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
 
     </nav>
 
-   
-    <!-- Edit Medicine -->
+    <?php
+
+    include('edit_delete_dbconn.php');
+
+    // Check if 'emp_id' is passed in the URL
+    if (isset($_GET['emp_id'])) {
+        $emp_id = $_GET['emp_id'];  // Get the emp_id from the query string
+    
+        // Initialize variables to hold the employee data
+        $emp_no = $name = $age = $bday = $gender = $division = $company = '';
+
+        try {
+            // Fetch the employee data from the database
+            $stmt = $conn->prepare("SELECT * FROM employees WHERE emp_id = :emp_id");
+            $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $fetch_fit = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($fetch_fit) {
+                // Populate form fields with fetched data
+                $emp_no = $fetch_fit['emp_no'];
+                $name = $fetch_fit['name'];
+                $age = $fetch_fit['age'];
+                $bday = $fetch_fit['bday'];
+                $gender = $fetch_fit['gender'];
+                $division = $fetch_fit['division'];
+                $company = $fetch_fit['company'];
+            } else {
+                echo "No Employee found with this ID.";
+                exit;
+            }
+        } catch (PDOException $e) {
+            echo "Database Error: " . $e->getMessage();
+            exit;
+        }
+    } else {
+        echo "No Employee ID provided.";
+        exit;
+    }
+
+    ?>
+
+    <!-- Eligibility Form -->
     <div class="form-container">
-        <h2>Edit Medicine</h2>
-        <form action="insert_med_rec.php" method="POST" enctype="multipart/form-data">
+        <h2>Medicine</h2>
+        <form action="insert_med.php" method="POST" enctype="multipart/form-data">
             <!-- Row 1 -->
             <!-- Row 1 -->
             <div class="form-row">
@@ -227,7 +199,7 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
             </div>
             <!-- Row 2 -->
             <div class="form-row">
-            <input type="hidden" id="med_id" name="med_id" value="<?= htmlspecialchars($med_id) ?>" readonly>
+
                 <div class="form-group">
                     <label for="temp">Gender :</label>
                     <input type="text" id="diagnosis" name="gender" value="<?= htmlspecialchars($gender) ?>" readonly>
@@ -252,23 +224,66 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
 
                 <div class="form-group">
                     <label for="name">Date :</label>
-                    <input type="date" id="date" name="date" value="<?= htmlspecialchars($date) ?>" required>
+                    <input type="date" id="date" name="date" required>
                 </div>
 
                 <div class="form-group">
                     <label for="O2_sat">Reason :</label>
-                    <input type="text" id="time" name="reason" placeholder="Reason" value="<?= htmlspecialchars($reason) ?>" required>
+                    <input type="text" id="time" name="reason" placeholder="Reason" required>
                 </div>
 
                 <div class="form-group">
                     <label for="O2_sat">Medicine :</label>
-                    <input type="text" id="from" name="medicine" placeholder="Reason" value="<?= htmlspecialchars($medicine) ?>" required>
+                    <select id="companyFilter" class="form-select" name="medicine" required onchange="fetchSupply()">
+                        <option value="">--Select Medicine--</option>
+                        <?php
+                        $conn = mysqli_connect("localhost", "root", "", "e_system");
+                        if (!$conn) {
+                            die("Connection failed: " . mysqli_connect_error());
+                        }
+
+                        // Populate dropdown options
+                        $sqloption = "SELECT DISTINCT Med_name FROM medicines";
+                        $result = mysqli_query($conn, $sqloption);
+                        if ($result) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $selected = (isset($_GET['Med_name']) && $_GET['Med_name'] === $row['Med_name']) ? 'selected' : '';
+                                echo '<option value="' . htmlspecialchars($row['Med_name']) . '" ' . $selected . '>' . htmlspecialchars($row['Med_name']) . '</option>';
+                            }
+                        } else {
+                            echo '<option value="">No Medicines Found</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="O2_sat">Supply :</label>
-                    <input type="text" id="to" name="supply" placeholder="Supply" value="<?= htmlspecialchars($supply) ?>" required>
+                    <input type="text" id="supply" name="supply" placeholder="Supply" required readonly>
                 </div>
+
+                <script>
+                    function fetchSupply() {
+                        const medicine = document.getElementById("companyFilter").value;
+
+                        if (medicine) {
+                            // Send an AJAX request to fetch the supply for the selected medicine
+                            const xhr = new XMLHttpRequest();
+                            xhr.open("POST", "getSupply.php", true);
+                            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4 && xhr.status === 200) {
+                                    const response = JSON.parse(xhr.responseText);
+                                    document.getElementById("supply").value = response.supply || "Not Available";
+                                }
+                            };
+                            xhr.send("Med_name=" + encodeURIComponent(medicine));
+                        } else {
+                            document.getElementById("supply").value = ""; // Clear supply field if no medicine is selected
+                        }
+                    }
+                </script>
+
 
 
             </div>
@@ -278,18 +293,18 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
 
                 <div class="form-group">
                     <label for="RR">Quantity :</label>
-                    <input type="number" id="quantity" name="quantity" placeholder="e. g. 7 pieces" value="<?= htmlspecialchars($quantity) ?>" required>
+                    <input type="number" id="quantity" name="quantity" placeholder="e. g. 7 pieces" required>
                 </div>
 
 
                 <div class="form-group">
                     <label for="remarks">Nurse on Duty :</label>
-                    <input id="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" value="<?= htmlspecialchars($nod) ?>" required>
+                    <input id="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" required>
                 </div>
 
                 <div class="form-group">
                     <label for="remarks">Note :</label>
-                    <input id="text" id="note" name="note" placeholder="Note" value="<?= htmlspecialchars($note) ?>" required>
+                    <input id="text" id="note" name="note" placeholder="Note" required>
                 </div>
 
             </div>
@@ -298,10 +313,18 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
             <div class="btn-group">
                 <button type="submit" class="btn-submit">Submit</button>
                 <button type="button" class="btn-cancel"
-                    onclick="window.location.href='clinic_admin.php#form_section';">Cancel</button>
+                    onclick="window.location.href='clinic_admin.php#medication_tab';">Cancel</button>
             </div>
         </form>
     </div>
 </body>
+<script>
+    // Get today's date
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // Format it as YYYY-MM-DD
+
+    // Set the value of the date input
+    document.getElementById('date').value = formattedDate;
+</script>
 
 </html>
