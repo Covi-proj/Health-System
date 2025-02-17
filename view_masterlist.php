@@ -1,10 +1,50 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php"); // Redirect to login if not authenticated
+    exit();
+}
+
+// Database connection
+$host = 'localhost';
+$dbname = 'e_system';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Fetch user's name, password, and username
+    $stmt = $pdo->prepare("SELECT name, password, username FROM users WHERE id = :user_id");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        // Securely output the values
+        $user_name = htmlspecialchars($user['name']); // User's full name
+        $username = htmlspecialchars($user['username']); // Username
+        $user_password = htmlspecialchars($user['password']); // User's password
+    } else {
+        $user_name = "Guest"; // Fallback if user not found
+        $user_password = "";
+        $username = ""; // Fallback for username
+    }
+} catch (PDOException $e) {
+    $user_name = "Error retrieving name.";
+    $user_password = ""; // Empty password on error
+    $username = ""; // Empty username on error
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master List</title>
+    <title>Employee List | Health-e</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,6 +71,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            font-size: 13px;
         }
 
         .btn-cancel {
@@ -148,19 +189,211 @@
             color: white;
             border-radius: 5px 0 0 5px;
         }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            /* Slight off-white background */
+            padding: 10px 10px;
+            /* Increased padding for more breathing space */
+            border-bottom: 2px solid #dcdcdc;
+            /* Subtle bottom border */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /* Light shadow for depth */
+        }
+
+        /* Left content styling */
+        /* Navbar Left */
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            /* Smooth scale transition */
+        }
+
+        .navbar-logo:hover {
+            transform: scale(1.1);
+            /* Subtle zoom effect on hover */
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            margin-left: 20px;
+            color: #333;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            /* Smooth color transition */
+        }
+
+        .logo-text:hover {
+            color: #007BFF;
+            /* Hover effect with primary brand color */
+        }
+
+        /* Date & Time */
+
+        /* Navbar Right */
+        /* Navbar Left */
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: 700;
+            margin-left: 15px;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        /* Date & Time */
+        .date-time-container p {
+            font-size: 14px;
+            color: #777;
+            font-weight: 300;
+            margin-left: 20px;
+        }
+
+        /* Navbar Right */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            padding-right: 20px;
+            margin-top: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-name {
+            font-size: 16px;
+            color: #444;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .user-avatar:hover {
+            border-color: #007BFF;
+            /* Light blue border on hover */
+        }
+
+        .user-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+
+        }
+
+        /* Basic styling for dropdown */
+        .user-info .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-info .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            min-width: 160px;
+            z-index: 1;
+        }
+
+        .user-info .dropdown-menu li {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .user-info .dropdown-menu li:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Display dropdown menu on hover */
+        .user-info .dropdown:hover .dropdown-menu {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
+<div class="navbar">
+        <div class="navbar-left">
+            <div class="logo-container">
+                <img src="unnamed.png" alt="Health-e Logo" class="navbar-logo">
+                <span class="logo-text"></span>
+            </div>
+            <div class="date-time-container">
+                <h5>Employee List</h5>
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <div class="user-info">
+                <div class="dropdown">
+                    <p class="user-name"><?php echo $username; ?></p>
+                    <ul class="dropdown-menu">
+                        <li class="fa fa-sign-out-alt"><a href="logout.php"
+                                style="text-decoration: none; font-weight: bold;"> Log out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.querySelector('.user-name').addEventListener('click', function () {
+                var dropdown = this.closest('.dropdown').querySelector('.dropdown-menu');
+                dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
+            });
+        </script>
+    </div>
+    </div>
     <!-- Main Section -->
     <section class="py-5">
         <div class="container">
 
             <!-- Section Header -->
-            <div class="section-header text-center mb-4">
-                <h1>Master List</h1>
-                <p>A comprehensive list of employees and their details.</p>
-            </div>
+          
             <div class="container mt-5">
 
 
@@ -206,19 +439,36 @@
                 <div class="mb-3">
                     <label for="companyFilter" class="form-label">Filter:</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+
                         <div class=form-row>
                             <div class="form-group">
                                 <select id="companyFilter" class="form-select" required>
-                                    <option value="" disabled selected>--Select Company--</option>
-                                    <option value="HEPC">HEPC</option>
-                                    <option value="POWERLANE">POWERLANE</option>
-                                    <option value="HR TEAM ASIA">HR TEAM ASIA</option>
-                                    <option value="HERU">HERU</option>
-                                    <option value="NCH">NCH</option>
-                                    <option value="CSC">CSC</option>
-                                    <option value="IISSI">IISSI</option>
-                                    <option value="EIPC">IEPC</option>
+                                    <option value="">--Select Company--</option>
+                                    <?php
+                                    // Database connection settings
+                                    $host = 'localhost';
+                                    $db = 'e_system';
+                                    $user = 'root';
+                                    $pass = '';
+
+                                    // Create PDO instance
+                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                    $sqloption = "SELECT DISTINCT company FROM employees";
+
+                                    try {
+                                        $stmt = $pdo->prepare($sqloption);
+                                        $stmt->execute();
+                                    } catch (PDOException $e) {
+                                        echo 'Error: ' . $e->getMessage();
+                                    }
+
+                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        $selected = (isset($_GET['company']) && $_GET['company'] === $row['company']) ? 'selected' : '';
+                                        echo '<option value="' . htmlspecialchars($row['company']) . '" ' . $selected . '>' . htmlspecialchars($row['company']) . '</option>';
+                                    }
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -241,10 +491,8 @@
                                 Add Employee
                             </button>
 
-
                         </div>
                     </div>
-
 
                 </div>
 
@@ -314,7 +562,7 @@
                 <div id="companyCounts">
                     <!-- List of company counts will be dynamically updated here -->
                 </div>
-                <a class="btn-cancel mt-3 d-inline-block" href="super-admin.php#balances">Back</a>
+            
 
             </div>
         </div>
@@ -439,7 +687,7 @@
 
                         <div class="mb-3">
                             <label for="editBday" class="form-label">Birthday</label>
-                            <input type="text" class="form-control" id="editBday" name="bday" required>
+                            <input type="date" class="form-control" id="editBday" name="bday" required>
                         </div>
 
                         <div class="mb-3">
@@ -537,6 +785,16 @@
 
 
     <script>
+
+        // Get today's date
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0]; // Format it as YYYY-MM-DD
+
+        // Set the value of the date input
+        document.getElementById('editBday').value = formattedDate;
+
+
+
         $(document).ready(function () {
             // Attach click event to Edit buttons
             $('#employeeTable').on('click', '.btn-edit', function () {
