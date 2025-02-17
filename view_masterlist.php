@@ -357,7 +357,7 @@ try {
 </head>
 
 <body>
-<div class="navbar">
+    <div class="navbar">
         <div class="navbar-left">
             <div class="logo-container">
                 <img src="unnamed.png" alt="Health-e Logo" class="navbar-logo">
@@ -393,11 +393,8 @@ try {
         <div class="container">
 
             <!-- Section Header -->
-          
+
             <div class="container mt-5">
-
-
-
 
                 <!-- Add Employee Button -->
 
@@ -492,6 +489,15 @@ try {
                             </button>
 
                         </div>
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                        <div class="form-group" style="margin-left: 10px;">
+                            <button type="button" id="btnAddEmployee" class="btn btn-primary"
+                                style="font-weight: bold; margin-bottom: 10px;" data-toggle="modal"
+                                data-target="#employeeHeadcountModal">
+                                <i class="fa fa-user-plus"></i> View Employee Headcount
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -559,10 +565,28 @@ try {
                 </table>
                 <p id="noDataMessage" style="display:none; text-align: center; color: red;">No data found</p>
 
-                <div id="companyCounts">
-                    <!-- List of company counts will be dynamically updated here -->
+                <div class="modal fade" id="employeeHeadcountModal" tabindex="-1" role="dialog"
+                    aria-labelledby="employeeHeadcountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="employeeHeadcountModalLabel">Employee Headcount</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="companyCounts">
+                                    <!-- List of company counts will be dynamically updated here -->
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            
+
 
             </div>
         </div>
