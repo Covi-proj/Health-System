@@ -1472,6 +1472,43 @@ try {
                         }
                     });
 
+                    document.getElementById('emp_number').addEventListener('input', function () {
+                        const searchValue = this.value.trim();
+                        const tables = document.querySelectorAll('table:not(#employeeTable):not(#medicineTable)'); // Select all tables
+
+                        tables.forEach(table => {
+                            console.log("Checking table:", table.id); // Debugging
+
+                            const tableRows = table.querySelectorAll('tbody tr');
+
+                            tableRows.forEach(row => {
+                                let empNoCell = null;
+
+                                // Try to find Employee No. column dynamically
+                                row.querySelectorAll('td').forEach(td => {
+                                    if (!empNoCell && /\d+/.test(td.textContent.trim())) { // Check if it contains a number
+                                        empNoCell = td;
+                                    }
+                                });
+
+                                if (empNoCell) {
+                                    const empNoText = empNoCell.textContent.trim();
+                                    console.log("Employee No. Found:", empNoText); // Debugging
+
+                                    if (searchValue === '' || empNoText.includes(searchValue)) {
+                                        row.style.display = ''; // Show matching row
+                                    } else {
+                                        row.style.display = 'none'; // Hide non-matching row
+                                    }
+                                } else {
+                                    console.log("No Employee No. found in row:", row);
+                                }
+                            });
+                        });
+                    });
+
+
+
                 </script>
 
                 <!-- Tabs -->
@@ -1849,9 +1886,9 @@ try {
                     <table id="example" class="display" style="width:100%">
                         <thead>
                             <tr class="med">
-                                <th>Date</th>
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Physician</th>
                                 <th>Remarks</th>
@@ -1897,9 +1934,10 @@ try {
                                 if ($data) {
                                     foreach ($data as $item) {
                                         echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
+
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['physician'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
@@ -2239,9 +2277,9 @@ try {
                     <table id="special_case" class="table table-striped table-bordered" style="width:100%">
                         <thead class="thead-dark">
                             <tr class="med">
-                                <th>Case No.</th>
                                 <th>Employee No.</th>
                                 <th style="width: 100px;">Name</th>
+                                <th>Case No.</th>
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Retain Am Shift</th>
@@ -2281,9 +2319,9 @@ try {
                                 if ($data) {
                                     foreach ($data as $item) {
                                         echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($item['case_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['case_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['retain'] ?? 'N/A') . '</td>';
@@ -2593,8 +2631,6 @@ try {
                 });
             </script>
 
-
-
             <!--Medicine-->
             <div id="payment" class="page">
                 <h2 style="color:black; font-size: 30px;">Medicine Inventory</h2>
@@ -2747,6 +2783,7 @@ try {
                     <thead>
                         <tr>
                             <th>Medicine</th>
+                            <th>Supply</th>
                             <th>Quantity</th>
                             <th>Date Received</th>
                             <th>Receiver</th>
@@ -2758,10 +2795,11 @@ try {
                         if ($data) {
                             foreach ($data as $item) {
                                 echo '<tr>';
-                                echo '<td>' . htmlspecialchars($item['Med_name']) . '</td>';
-                                echo '<td>' . htmlspecialchars($item['quantity']) . '</td>';
-                                echo '<td>' . htmlspecialchars($item['date_receive']) . '</td>';
-                                echo '<td>' . htmlspecialchars($item['receiver']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['Med_name' ?? 'N/A']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['supply' ?? 'N/A']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['quantity' ?? 'N/A']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['date_receive' ?? 'N/A']) . '</td>';
+                                echo '<td>' . htmlspecialchars($item['receiver' ?? 'N/A']) . '</td>';
                                 echo '<td class="text-center">';
                                 echo '<a href="edit_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark"><i class="fas fa-edit"></i></a>';
                                 echo '<a href="delete_med.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark" style="margin-left: 10px;"><i class="fas fa-trash"></i></a>';
