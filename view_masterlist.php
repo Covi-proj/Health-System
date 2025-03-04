@@ -467,10 +467,47 @@ try {
                                     }
                                     ?>
                                 </select>
+
+
                             </div>
+
+
                         </div>
 
-                        <div class="form-row"></div>
+                        <div class="form-row">
+
+                            <div class="form-group" style="margin-left: 10px;">
+                                <select id="dept" class="form-select" required>
+                                    <option value="">--Select Department--</option>
+                                    <?php
+                                    // Database connection settings
+                                    $host = 'localhost';
+                                    $db = 'e_system';
+                                    $user = 'root';
+                                    $pass = '';
+
+                                    // Create PDO instance
+                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                    $sqloption = "SELECT DISTINCT division FROM employees";
+
+                                    try {
+                                        $stmt = $pdo->prepare($sqloption);
+                                        $stmt->execute();
+                                    } catch (PDOException $e) {
+                                        echo 'Error: ' . $e->getMessage();
+                                    }
+
+                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        $selected = (isset($_GET['division']) && $_GET['division'] === $row['division']) ? 'selected' : '';
+                                        echo '<option value="' . htmlspecialchars($row['division']) . '" ' . $selected . '>' . htmlspecialchars($row['division']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+
+                            </div>
+                        </div>
 
                         <div class="form-group" style="margin-left: 10px;">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -538,7 +575,7 @@ try {
                             // Check if data exists
                             if ($data) {
                                 foreach ($data as $item) {
-                                    echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '">';
+                                    echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
                                     echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                     echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                     echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
@@ -561,6 +598,31 @@ try {
                             echo '<tr><td colspan="8" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
                         }
                         ?>
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const dept = document.getElementById("dept");
+                                const rows = document.querySelectorAll(".employee-row");
+
+                                if (!dept || rows.length === 0) return; // Ensure elements exist
+
+                                dept.addEventListener("change", function () {
+                                    const selectedDept = this.value.trim().toLowerCase();
+
+                                    rows.forEach(row => {
+                                        const division = row.getAttribute("data-division");
+                                        if (division) {
+                                            const divisionLower = division.trim().toLowerCase();
+                                            if (selectedDept === "" || divisionLower === selectedDept) {
+                                                row.style.display = "";
+                                            } else {
+                                                row.style.display = "none";
+                                            }
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
                     </tbody>
                 </table>
                 <p id="noDataMessage" style="display:none; text-align: center; color: red;">No data found</p>
@@ -810,6 +872,9 @@ try {
 
     <script>
 
+
+
+
         // Get today's date
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0]; // Format it as YYYY-MM-DD
@@ -858,6 +923,9 @@ try {
                 $('#editModal').modal('show');
             });
         });
+
+
+
     </script>
     <!--Set total entries each company-->
     <script>
