@@ -1382,35 +1382,35 @@ try {
                     </div>
                     <div class="input-group">
                         <label style="color: black;" for="full_name">Name :</label>
-                        <input type="text" id="full_name" name="name" class="input-field">
+                        <input type="text" id="full_name" name="name" class="input-field" readonly>
                     </div>
 
                     <!-- Age and Birthday Row 2-->
 
                     <div class="input-group">
                         <label style="color: black;" for="age_input">Age :</label>
-                        <input type="text" id="age_input" name="age_input" class="input-field">
+                        <input type="text" id="age_input" name="age_input" class="input-field" readonly>
                     </div>
                     <div class="input-group">
                         <label style="color: black;" for="birthday_input">Birthday :</label>
-                        <input type="text" id="birthday_input" name="bday" class="input-field">
+                        <input type="text" id="birthday_input" name="bday" class="input-field" readonly>
                     </div>
 
                     <!-- Gender and Section/Dept. Row 3-->
                     <div class="input-group">
                         <label style="color: black;" for="gender_input">Gender :</label>
-                        <input type="text" id="gender_input" name="gender" class="input-field">
+                        <input type="text" id="gender_input" name="gender" class="input-field" readonly>
                     </div>
 
                     <div class="input-group">
                         <label style="color: black;" for="section_input">Section/Department :</label>
-                        <input type="text" id="section_input" name="division" class="input-field">
+                        <input type="text" id="section_input" name="division" class="input-field" readonly>
                     </div>
 
                     <!-- Company Row 4-->
                     <div class="input-group">
                         <label style="color: black;" for="company_input">Company :</label>
-                        <input type="text" id="company_input" name="company" class="input-field">
+                        <input type="text" id="company_input" name="company" class="input-field" readonly>
                     </div>
 
 
@@ -1559,6 +1559,7 @@ try {
                                 <th>No. days Absent</th>
                                 <th>Reason</th>
                                 <th>File</th>
+                                <th>Remarks</th>
                                 <th>Nurse on Duty</th>
                                 <th style="width :90px;">Note</th>
 
@@ -1611,7 +1612,7 @@ try {
                                             echo 'N/A';  // Display 'N/A' if the file path is empty
                                         }
                                         echo '</td>';
-
+                                        echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         // Action buttons
@@ -2387,7 +2388,7 @@ try {
                                 <th>Status</th>
                                 <th>Days Lost</th>
                                 <th>Date of Absence</th>
-                                <th>file</th>
+                                <th>File</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -2559,6 +2560,34 @@ try {
                     <div class="table-responsive">
                         <script
                             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                        <select id="emp" class="form-select" required>
+                            <option value="">--Select Company--</option>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
+
+                            // Create PDO instance
+                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                            $sqloption = "SELECT DISTINCT company FROM employees";
+
+                            try {
+                                $stmt = $pdo->prepare($sqloption);
+                                $stmt->execute();
+                            } catch (PDOException $e) {
+                                echo 'Error: ' . $e->getMessage();
+                            }
+
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                $selected = (isset($_GET['company']) && $_GET['company'] === $row['company']) ? 'selected' : '';
+                                echo '<option value="' . htmlspecialchars($row['company']) . '" ' . $selected . '>' . htmlspecialchars($row['company']) . '</option>';
+                            }
+                            ?>
+                        </select>
 
                         <table id="employeeTable" class="table table-bordered table-striped">
                             <thead class="table-dark">
@@ -2606,7 +2635,14 @@ try {
                                             echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
                                             echo '<td class="text-center">';
-                                            echo '<a href="view_record.php?emp_id=' . htmlspecialchars($item['emp_id']) . '" class="btn btn-sm btn-danger btn-action"><i class="fas fa-eye"></i> View Records</a>';
+                                            echo '<a href="view_record.php?emp_id=' . htmlspecialchars($item['emp_id']) . '" 
+                                                    style="display: inline-flex; align-items: center; gap: 5px; background-color:rgb(167, 0, 17); color: white; 
+                                                    padding: 8px 12px; border-radius: 5px; font-size: 12px; text-decoration: none; transition: 0.3s ease-in-out;"
+                                                    onmouseover="this.style.backgroundColor=\'#c82333\'; this.style.transform=\'scale(1.05)\'"
+                                                    onmouseout="this.style.backgroundColor=\'#dc3545\'; this.style.transform=\'scale(1)\'"
+                                                    class="btn btn-sm btn-danger btn-action">
+                                                    <i class="fas fa-eye" style="font-size: 16px;"></i> View Records
+                                                    </a>';
                                             echo '</td>';
                                             echo '</tr>';
                                         }
@@ -2628,6 +2664,25 @@ try {
             <script>
                 $(document).ready(function () {
                     $('#employeeTable').DataTable();
+                });
+
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    const emp = document.getElementById("emp");
+                    const rows = document.querySelectorAll(".employee-row");
+
+                    emp.addEventListener("change", function () {
+                        const selectedCompany = this.value.toLowerCase();
+
+                        rows.forEach(row => {
+                            const company = row.getAttribute("data-company").toLowerCase();
+                            if (selectedCompany === "" || company === selectedCompany) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    });
                 });
             </script>
 
