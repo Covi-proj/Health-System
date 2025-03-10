@@ -778,21 +778,14 @@ try {
 
                         <div class="mb-3">
                             <label class="form-label">Gender</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <div>
-                                    <input type="radio" id="male" name="gender" value="Male" required>
-                                    <label for="male">Male</label>
-                                </div>
-                                <div>
-                                    <input type="radio" id="female" name="gender" value="Female">
-                                    <label for="female">Female</label>
-                                </div>
-                                <div>
-                                    <input type="radio" id="other" name="gender" value="Other">
-                                    <label for="other">Other</label>
-                                </div>
-                            </div>
+                            <select id="editGender" class="form-select" name="gender" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
+
 
                         <div class="mb-3">
                             <label for="editDivision" class="form-label">Section/Dept.</label>
@@ -873,8 +866,6 @@ try {
     <script>
 
 
-
-
         // Get today's date
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0]; // Format it as YYYY-MM-DD
@@ -885,7 +876,6 @@ try {
 
 
         $(document).ready(function () {
-            // Attach click event to Edit buttons
             $('#employeeTable').on('click', '.btn-edit', function () {
                 const row = $(this).closest('tr'); // Get the row of the clicked button
 
@@ -893,11 +883,11 @@ try {
                 const empId = $(this).data('emp-id'); // Employee ID (stored in the button as data-attribute)
                 const empNo = row.find('td:eq(0)').text(); // Employee No.
                 const name = row.find('td:eq(1)').text(); // Name
-                const age = row.find('td:eq(2)').text(); // Age (assumed to be in 3rd column)
-                const bday = row.find('td:eq(3)').text(); // Birthday (assumed to be in 4th column)
-                const gender = row.find('td:eq(4)').text(); // Gender (assumed to be in 5th column)
-                const division = row.find('td:eq(5)').text(); // Section/Dept. (assumed to be in 6th column)
-                const company = row.find('td:eq(6)').text(); // Company (assumed to be in 7th column)
+                const age = row.find('td:eq(2)').text(); // Age
+                const bday = row.find('td:eq(3)').text(); // Birthday
+                const gender = row.find('td:eq(4)').text().trim().replace(/\u00A0/g, ''); // Clean any unexpected spaces
+                const division = row.find('td:eq(5)').text(); // Section/Dept.
+                const company = row.find('td:eq(6)').text(); // Company
 
                 // Populate modal fields
                 $('#editEmpId').val(empId);
@@ -905,17 +895,7 @@ try {
                 $('#editName').val(name);
                 $('#editAge').val(age);
                 $('#editBday').val(bday);
-
-                // Set gender
-                // Set gender radio button based on the value
-                if (gender.toLowerCase() === 'male') {
-                    $('#male').prop('checked', true);
-                } else if (gender.toLowerCase() === 'female') {
-                    $('#female').prop('checked', true);
-                } else {
-                    $('#other').prop('checked', true);
-                }
-
+                $('#editGender').val(gender); // Updated for <select>
                 $('#editDivision').val(division);
                 $('#editCompany').val(company);
 
@@ -923,6 +903,8 @@ try {
                 $('#editModal').modal('show');
             });
         });
+
+
 
 
 
