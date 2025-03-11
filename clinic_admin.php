@@ -79,6 +79,282 @@ try {
 
 
     <style>
+        /* Clean Professional UI */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #2a2185;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: white;
+            color: black;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .navbar-logo {
+            width: 75px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .user-name {
+            font-weight: normal;
+            color: black;
+            margin: 0;
+        }
+
+        .navbar .user-image {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Sidebar */
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+        }
+
+        .sidebar {
+            width: 205px;
+            background-color: #8B0000;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            transition: width 0.3s;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar h1 {
+            color: white;
+            font-size: 22px;
+            margin-bottom: 20px;
+            margin-left: 20px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar h1 i {
+            margin-right: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: light;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.6s;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+            display: block;
+        }
+
+        .sidebar ul li:hover,
+        .sidebar ul li.active {
+            background-color: black;
+        }
+
+        .sidebar ul li.active {
+            border-left: 5px solid #fff;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* Tables */
+        table {
+            width: 800px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: black;
+            font-weight: bold;
+        }
+
+        th {
+            background-color: rgb(7, 6, 6);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            border-top: 10px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f1f1f1;
+        }
+
+        tr:hover td {
+            background-color: rgb(73, 82, 89);
+            color: white;
+        }
+
+        /* Buttons */
+        button,
+        .action-btn {
+            background-color: #3c2f9b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover,
+        .action-btn:hover {
+            background-color: #5243b4;
+        }
+
+        /* Forms */
+        input[type="text"],
+        input[type="password"],
+        select {
+            padding: 0.875rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            width: 200px;
+            margin-bottom: 1.5rem;
+            margin-left: 5px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #8B0000;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.1);
+        }
+
+        /* Profile Section */
+        .profile-container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .profile-img img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* DataTables */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.5rem 0.75rem;
+            margin: 0 0.25rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #8B0000;
+            color: white !important;
+            border-color: #8B0000;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .navbar {
+                padding: 1rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8B0000;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a00;
+        }
+
         /* General Styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -101,9 +377,7 @@ try {
             z-index: 100;
             display: flex;
             justify-content: space-between;
-            /* Space between left and right content */
             align-items: center;
-            /* Align items vertically */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -124,7 +398,6 @@ try {
             display: flex;
             align-items: center;
             gap: 10px;
-            /* Adds space between text and image */
         }
 
         .navbar .user-name {
@@ -135,10 +408,8 @@ try {
 
         .navbar .user-image {
             width: 30px;
-            /* Adjust size as needed */
             height: 30px;
             border-radius: 50%;
-            /* Makes it a circular image */
             object-fit: cover;
         }
 
@@ -161,7 +432,6 @@ try {
 
         .sidebar.collapsed {
             width: 80px;
-            /* Width when collapsed */
         }
 
         .sidebar h1 {
@@ -211,12 +481,10 @@ try {
 
         .sidebar.collapsed ul li i {
             display: none;
-            /* Hide icons when collapsed */
         }
 
         .sidebar .toggle-btn {
             display: none;
-            /* Initially hidden */
         }
 
         /* Button for toggling the sidebar */
@@ -523,14 +791,14 @@ try {
             flex: 1;
             /* Allow form elements to be evenly spaced */
             min-width: 220px;
-            /* Ensure the form elements don’t get too small */
+            /* Ensure the form elements don't get too small */
         }
 
         .form-row .form-group {
             flex: 1;
             /* Allow form elements to be evenly spaced */
             min-width: 220px;
-            /* Ensure the form elements don’t get too small */
+            /* Ensure the form elements don't get too small */
         }
 
         /* Buttons */
@@ -1584,6 +1852,7 @@ try {
                                     SELECT tbl_fittowork.*, employees.emp_no, employees.name
                                     FROM tbl_fittowork
                                     LEFT JOIN employees ON tbl_fittowork.emp_id = employees.emp_id
+                                    ORDER BY tbl_fittowork.date ASC
                                     ");
                                 $stmt->execute();
 
@@ -1717,6 +1986,7 @@ try {
                                 SELECT tbl_medicine.*, employees.emp_no, employees.name
                                 FROM tbl_medicine
                                 LEFT JOIN employees ON tbl_medicine.emp_id = employees.emp_id
+                                ORDER BY tbl_medicine.date ASC
                                 ");
                                 $stmt->execute();
 
@@ -1728,7 +1998,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? $item['guest_name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
@@ -1738,7 +2008,10 @@ try {
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
 
-                                        echo '<a href="edit_meds.php?emp_id=' . $item['emp_id'] . '&med_id=' . $item['med_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="edit_meds.php?emp_id=' . urlencode($item['emp_id']) .
+                                            '&med_id=' . urlencode($item['med_id']) .
+                                            '&guest_name=' . urlencode($item['guest_name']) .
+                                            '" class="link-dark fas fa-pen-to-square"></a>';
 
                                         echo '<a href="delete_medicine.php?med_id=' . htmlspecialchars($item['med_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
                                         echo '</td>';
@@ -1784,8 +2057,8 @@ try {
                                 <th>Employee No.</th>
                                 <th>Name</th>
                                 <th>Date</th>
-                                <th>Date</th>
                                 <th>Time</th>
+                                <th>Blood Pressure</th>
                                 <th>Temperature</th>
                                 <th>Pulse Rate</th>
                                 <th>Respiratory</th>
@@ -1812,6 +2085,7 @@ try {
                                 SELECT tbl_vitalsgn.*, employees.emp_no, employees.name
                                 FROM tbl_vitalsgn
                                 LEFT JOIN employees ON tbl_vitalsgn.emp_id = employees.emp_id
+                                ORDER BY tbl_vitalsgn.date ASC
                                 ");
                                 $stmt->execute();
 
@@ -1924,6 +2198,7 @@ try {
                                 tbl_consultation.cons_id
                                 FROM tbl_consultation
                                 LEFT JOIN employees ON tbl_consultation.emp_id = employees.emp_id
+                                ORDER BY tbl_consultation.date ASC 
                                 ";
                                 $stmt = $pdo->prepare($query);
                                 $stmt->execute();
@@ -2120,7 +2395,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_senthome LEFT JOIN employees ON tbl_senthome.emp_id = employees.emp_id");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_senthome LEFT JOIN employees ON tbl_senthome.emp_id = employees.emp_id ORDER BY employees.emp_id ASC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2214,7 +2489,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_pregnant_notif LEFT JOIN employees ON tbl_pregnant_notif.emp_id = employees.emp_id");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_pregnant_notif LEFT JOIN employees ON tbl_pregnant_notif.emp_id = employees.emp_id ORDER BY tbl_pregnant_notif.date_sub ASC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2310,7 +2585,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_specialcase LEFT JOIN employees ON tbl_specialcase.emp_id = employees.emp_id");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_specialcase LEFT JOIN employees ON tbl_specialcase.emp_id = employees.emp_id ORDER BY tbl_specialcase.date ASC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2406,7 +2681,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_incident_report LEFT JOIN employees ON tbl_incident_report.emp_id = employees.emp_id");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_incident_report LEFT JOIN employees ON tbl_incident_report.emp_id = employees.emp_id ORDER BY tbl_incident_report.date ASC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2537,8 +2812,6 @@ try {
                         style="font-weight: bold; text-decoration: none;">
                         Edit Profile
                     </a>
-
-
                 </div>
             </div>
 
@@ -2589,6 +2862,35 @@ try {
                             ?>
                         </select>
 
+                        <select id="dept" class="form-select" required>
+                            <option value="">--Select Department--</option>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
+
+                            // Create PDO instance
+                            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                            $sqloption = "SELECT DISTINCT division FROM employees";
+
+                            try {
+                                $stmt = $pdo->prepare($sqloption);
+                                $stmt->execute();
+                            } catch (PDOException $e) {
+                                echo 'Error: ' . $e->getMessage();
+                            }
+
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                $selected = (isset($_GET['division']) && $_GET['division'] === $row['division']) ? 'selected' : '';
+                                echo '<option value="' . htmlspecialchars($row['division']) . '" ' . $selected . '>' . htmlspecialchars($row['division']) . '</option>';
+                            }
+                            ?>
+                        </select>
+
                         <table id="employeeTable" class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -2626,7 +2928,8 @@ try {
                                     // Check if data exists
                                     if ($data) {
                                         foreach ($data as $item) {
-                                            echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '">';
+                                            echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
+
                                             echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
@@ -2669,8 +2972,10 @@ try {
 
                 document.addEventListener("DOMContentLoaded", function () {
                     const emp = document.getElementById("emp");
+                    const dept = document.getElementById("dept"); // Define dept properly
                     const rows = document.querySelectorAll(".employee-row");
 
+                    // Company filtering
                     emp.addEventListener("change", function () {
                         const selectedCompany = this.value.toLowerCase();
 
@@ -2683,7 +2988,24 @@ try {
                             }
                         });
                     });
+
+                    // Department filtering
+                    dept.addEventListener("change", function () {
+                        const selectedDept = this.value.toLowerCase();
+
+                        rows.forEach(row => {
+                            const division = row.getAttribute("data-division").toLowerCase(); // Now data-division exists
+                            if (selectedDept === "" || division === selectedDept) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    });
                 });
+
+
+
             </script>
 
             <!--Medicine-->
@@ -2976,6 +3298,32 @@ try {
                 showPage('patient_mr');
             } else if (hash === '#form_section') {
                 showPage('form_section'); // Show the fit section
+
+                if (hash === '#fit_work_tab') {
+                    showPage('fit_work_tab');
+
+                } else if (hash === '#medication_tab') {
+                    showPage('medication_tab');
+
+                } else if (hash === '#vital_signs_tab') {
+                    showPage('vital_signs_tab');
+
+                } else if (hash === '#consultation_tab') {
+                    showPage('consultation_tab');
+
+                } else if (hash === '#confinement_tab') {
+                    showPage('confinement_tab');
+
+                } else if (hash === '#sent_home_tab') {
+                    showPage('sent_home_tab');
+
+                } else if (hash === '#special_case_tab') {
+                    showPage('special_case_tab');
+
+                } else if (hash === '#incident_report_tab') {
+                    showPage('incident_report_tab');
+                }
+
             } else if (hash === '#preg') {
                 showPage('preg');// Show the pregnant notification
             }
