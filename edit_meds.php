@@ -2,69 +2,78 @@
 
 include('edit_delete_dbconn.php');
 
-// Check if 'emp_id' and 'f_id' are passed in the URL
-if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
-    $emp_id = $_GET['emp_id'];  // Get the emp_id from the query string
-    $med_id = $_GET['med_id'];    // Get the f_id from the query string
+// Ensure required parameters are set
+if (!isset($_GET['emp_id'], $_GET['med_id'], $_GET['guest_name'])) {
+    echo '<div style="padding: 20px; background-color: #fff3cd; color: #856404; border-radius: 5px; border: 1px solid #ffeeba; font-family: Arial, sans-serif; text-align: center; font-size: 16px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <strong>Warning:</strong> No Employee ID, Medicine ID, or Guest Name provided.
+</div>';
+    exit;
+}
 
-    // Initialize variables to hold the employee data
-    $emp_no = $name = $age = $bday = $gender = $division = $company = '';
-    $date = $reason = $medicine = $supply = $quantity = $nod = $note = '';
+$emp_id = htmlspecialchars($_GET['emp_id']);
+$med_id = htmlspecialchars($_GET['med_id']);
+$guest_name = htmlspecialchars($_GET['guest_name']);
 
-    try {
-        // Fetch the employee data from the database
+// Initialize variables
+$emp_no = $name = $age = $bday = $gender = $division = $company = '';
+$date = $reason = $medicine = $supply = $quantity = $nod = $note = '';
+
+try {
+    // Determine if guest or employee
+    if (!empty($guest_name)) {
+        $emp_no = 'Guest';
+        $name = $guest_name;
+    } else {
+        // Fetch employee data
         $stmt = $conn->prepare("SELECT * FROM employees WHERE emp_id = :emp_id");
         $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_INT);
         $stmt->execute();
         $fetch_emp = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($fetch_emp) {
-            // Populate form fields with fetched employee data
-            $emp_no = $fetch_emp['emp_no'];
-            $name = $fetch_emp['name'];
-            $age = $fetch_emp['age'];
-            $bday = $fetch_emp['bday'];
-            $gender = $fetch_emp['gender'];
-            $division = $fetch_emp['division'];
-            $company = $fetch_emp['company'];
-        } else {
-            echo "No Employee found with this ID.";
-            exit;
+        if (!$fetch_emp) {
+            throw new Exception("No Employee found with this ID.");
         }
 
-        // Fetch fit-to-work data for the employee using f_id
-        $stmt = $conn->prepare("SELECT * FROM tbl_medicine WHERE med_id = :med_id ORDER BY med_id DESC LIMIT 1");
-        $stmt->bindParam(':med_id', $med_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $fetch_med = $stmt->fetch(PDO::FETCH_ASSOC);  // Changed to FETCH_ASSOC to ensure array
-
-        if ($fetch_med) {
-            // Populate form fields with fetched fit-to-work data
-            $date = $fetch_med['date'];
-            $reason = $fetch_med['reason'];
-            $medicine = $fetch_med['medicine'];
-            $supply = $fetch_med['supply'];
-            $quantity = $fetch_med['quantity'];
-            $nod = $fetch_med['nod'];
-            $note = $fetch_med['note'];
-
-         
-        } else {
-            // Handle case where no fit-to-work data is found
-            $nfa = 'Not Available';  // Example for placeholder
-        }
-
-    } catch (PDOException $e) {
-        echo "Database Error: " . $e->getMessage();
-        exit;
+        // Assign employee details
+        $emp_no = $fetch_emp['emp_no'] ?? 'N/A';
+        $name = $fetch_emp['name'] ?? 'N/A';
+        $age = $fetch_emp['age'] ?? 'N/A';
+        $bday = $fetch_emp['bday'] ?? 'N/A';
+        $gender = $fetch_emp['gender'] ?? 'N/A';
+        $division = $fetch_emp['division'] ?? 'N/A';
+        $company = $fetch_emp['company'] ?? 'N/A';
     }
-} else {
-    echo '<div style="padding: 20px; background-color: #fff3cd; color: #856404; border-radius: 5px; border: 1px solid #ffeeba; font-family: Arial, sans-serif; text-align: center; font-size: 16px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <strong>Warning:</strong> No Employee ID or Fit-to-Work ID provided.
-</div>';
+
+    // Fetch medicine data
+    if (!empty($guest_name)) {
+        $stmt = $conn->prepare("SELECT * FROM tbl_medicine WHERE med_id = :med_id AND guest_name = :guest_name ORDER BY med_id DESC LIMIT 1");
+        $stmt->bindParam(':med_id', $med_id, PDO::PARAM_INT);
+        $stmt->bindParam(':guest_name', $guest_name, PDO::PARAM_STR);
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM tbl_medicine WHERE med_id = :med_id AND emp_id = :emp_id ORDER BY med_id DESC LIMIT 1");
+        $stmt->bindParam(':med_id', $med_id, PDO::PARAM_INT);
+        $stmt->bindParam(':emp_id', $emp_id, PDO::PARAM_INT);
+    }
+    $stmt->execute();
+    $fetch_med = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($fetch_med) {
+        $date = $fetch_med['date'] ?? '';
+        $reason = $fetch_med['reason'] ?? '';
+        $medicine = $fetch_med['medicine'] ?? '';
+        $supply = $fetch_med['supply'] ?? '';
+        $quantity = $fetch_med['quantity'] ?? '';
+        $nod = $fetch_med['nod'] ?? '';
+        $note = $fetch_med['note'] ?? '';
+    }
+
+} catch (PDOException $e) {
+    echo "<div style='color: red;'>Database Error: " . htmlspecialchars($e->getMessage()) . "</div>";
+    exit;
+} catch (Exception $e) {
+    echo "<div style='color: red;'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
     exit;
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -193,15 +202,15 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
 
     </nav>
 
-   
+
     <!-- Edit Medicine -->
     <div class="form-container">
         <h2>Edit Medicine</h2>
-        <form action="insert_med_rec.php" method="POST" enctype="multipart/form-data">
-            <!-- Row 1 -->
+        <form action="update_med_rec.php" method="POST" enctype="multipart/form-data">
             <!-- Row 1 -->
             <div class="form-row">
                 <input type="hidden" name="emp_id" value="<?= htmlspecialchars($emp_id) ?>">
+                <input type="hidden" name="med_id" value="<?= htmlspecialchars($med_id) ?>">
                 <div class="form-group">
                     <label for="name">Employee No. :</label>
                     <input type="text" id="emp" name="emp_no" value="<?= htmlspecialchars($emp_no) ?>" required>
@@ -209,89 +218,77 @@ if (isset($_GET['emp_id']) && isset($_GET['med_id'])) {
 
                 <div class="form-group">
                     <label for="name">Name :</label>
-                    <input type="text" id="age" name="name" value="<?= htmlspecialchars($name) ?>" readonly>
+                    <input type="text" id="guest_name" name="guest_name" value="<?= htmlspecialchars($name ?: $guest_name) ?>" <?= empty($guest_name) ? 'readonly' : '' ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Age :</label>
-                    <input type="text" id="age" name="age" value="<?= htmlspecialchars($age) ?>" readonly>
+                    <input type="text" id="age" name="age" value="<?= htmlspecialchars($age ?: 'N/A') ?>" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="name">Birthday :</label>
-                    <input type="text" id="bday" name="bday" value="<?= htmlspecialchars($bday) ?>" readonly>
+                    <input type="text" id="bday" name="bday" value="<?= htmlspecialchars($bday ?: 'N/A') ?>" readonly>
                 </div>
-
-
-
             </div>
+
             <!-- Row 2 -->
             <div class="form-row">
-            <input type="hidden" id="med_id" name="med_id" value="<?= htmlspecialchars($med_id) ?>" readonly>
                 <div class="form-group">
                     <label for="temp">Gender :</label>
-                    <input type="text" id="diagnosis" name="gender" value="<?= htmlspecialchars($gender) ?>" readonly>
+                    <input type="text" id="gender" name="gender" value="<?= htmlspecialchars($gender ?: 'N/A') ?>" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="temp">Section/Dept :</label>
-                    <input type="text" id="diagnosis" name="division" value="<?= htmlspecialchars($division) ?>"
-                        readonly>
+                    <input type="text" id="division" name="division" value="<?= htmlspecialchars($division ?: 'N/A') ?>" readonly>
                 </div>
 
                 <div class="form-group">
                     <label for="temp">Company :</label>
-                    <input type="text" id="company" name="company" value="<?= htmlspecialchars($company) ?>" readonly>
+                    <input type="text" id="company" name="company" value="<?= htmlspecialchars($company ?: 'N/A') ?>" readonly>
                 </div>
-
-
             </div>
 
             <!-- Row 3 -->
             <div class="form-row">
-
                 <div class="form-group">
-                    <label for="name">Date :</label>
+                    <label for="date">Date :</label>
                     <input type="date" id="date" name="date" value="<?= htmlspecialchars($date) ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Reason :</label>
-                    <input type="text" id="time" name="reason" placeholder="Reason" value="<?= htmlspecialchars($reason) ?>" required>
+                    <label for="reason">Reason :</label>
+                    <input type="text" id="reason" name="reason" placeholder="Reason" value="<?= htmlspecialchars($reason) ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Medicine :</label>
-                    <input type="text" id="from" name="medicine" placeholder="Reason" value="<?= htmlspecialchars($medicine) ?>" required>
+                    <label for="medicine">Medicine :</label>
+                    <input type="text" id="medicine" name="medicine" placeholder="Medicine" value="<?= htmlspecialchars($medicine) ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="O2_sat">Supply :</label>
-                    <input type="text" id="to" name="supply" placeholder="Supply" value="<?= htmlspecialchars($supply) ?>" required>
+                    <label for="supply">Supply :</label>
+                    <input type="text" id="supply" name="supply" placeholder="Supply" value="<?= htmlspecialchars($supply) ?>" required>
                 </div>
-
-
             </div>
+
             <!-- Row 4 -->
             <div class="form-row">
-
-
                 <div class="form-group">
-                    <label for="RR">Quantity :</label>
-                    <input type="number" id="quantity" name="quantity" placeholder="e. g. 7 pieces" value="<?= htmlspecialchars($quantity) ?>" required>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="remarks">Nurse on Duty :</label>
-                    <input id="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" value="<?= htmlspecialchars($nod) ?>" required>
+                    <label for="quantity">Quantity :</label>
+                    <input type="number" id="quantity" name="quantity" placeholder="e.g. 7 pieces" value="<?= htmlspecialchars($quantity) ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="remarks">Note :</label>
-                    <input id="text" id="note" name="note" placeholder="Note" value="<?= htmlspecialchars($note) ?>" required>
+                    <label for="nod">Nurse on Duty :</label>
+                    <input type="text" id="nod" name="nod" placeholder="e.g. Name of Nurse on Duty" value="<?= htmlspecialchars($nod) ?>" required>
                 </div>
 
+                <div class="form-group">
+                    <label for="note">Note :</label>
+                    <input type="text" id="note" name="note" placeholder="Note" value="<?= htmlspecialchars($note) ?>" required>
+                </div>
             </div>
 
             <!-- Buttons -->
