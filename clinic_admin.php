@@ -1650,7 +1650,21 @@ try {
                     </div>
                     <div class="input-group">
                         <label style="color: black;" for="full_name">Name :</label>
-                        <input type="text" id="full_name" name="name" class="input-field" readonly>
+                        <input type="password" id="full_name" name="name" class="input-field" readonly>
+                        <button type="button" onclick="toggleName()" style="margin-left: 10px;"><i class="fas fa-eye"></i></button>
+                        <script>
+                            function toggleName() {
+                                const nameInput = document.getElementById('full_name');
+                                const button = event.currentTarget.querySelector('i');
+                                if (nameInput.type === 'text') {
+                                    nameInput.type = 'password';
+                                    button.className = 'fas fa-eye';
+                                } else {
+                                    nameInput.type = 'text'; 
+                                    button.className = 'fas fa-eye-slash';
+                                }
+                            }
+                        </script>
                     </div>
 
                     <!-- Age and Birthday Row 2-->
@@ -1661,7 +1675,21 @@ try {
                     </div>
                     <div class="input-group">
                         <label style="color: black;" for="birthday_input">Birthday :</label>
-                        <input type="text" id="birthday_input" name="bday" class="input-field" readonly>
+                        <input type="password" id="birthday_input" name="bday" class="input-field" readonly>
+                        <button type="button" onclick="toggleBirthday()" style="margin-left: 10px;"><i class="fas fa-eye"></i></button>
+                        <script>
+                            function toggleBirthday() {
+                                const birthdayInput = document.getElementById('birthday_input');
+                                const button = event.currentTarget.querySelector('i');
+                                if (birthdayInput.type === 'text') {
+                                    birthdayInput.type = 'password';
+                                    button.className = 'fas fa-eye';
+                                } else {
+                                    birthdayInput.type = 'text';
+                                    button.className = 'fas fa-eye-slash';
+                                }
+                            }
+                        </script>
                     </div>
 
                     <!-- Gender and Section/Dept. Row 3-->
@@ -1906,16 +1934,48 @@ try {
                     </table>
 
                     <script>
+                        // Global configuration for all DataTables
                         $(document).ready(function () {
-                            $('#new').DataTable({
-                                responsive: true, // Makes the table responsive
-                                paging: true,    // Enables pagination
-                                searching: true, // Enables search bar
-                                ordering: true,  // Enables column sorting
-                                info: true       // Shows table information
+                            // Disable all DataTables error alerts globally
+                            $.fn.dataTable.ext.errMode = 'none';
+
+                            // Common configuration for all tables
+                            const commonConfig = {
+                                responsive: true,
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                info: true,
+                                processing: true,
+                                destroy: true,
+                                language: {
+                                    emptyTable: "No records available",
+                                    zeroRecords: "No matching records found",
+                                    error: null
+                                },
+                                columnDefs: [{
+                                    targets: '_all',
+                                    defaultContent: "N/A"
+                                }],
+                                error: function (settings, helpPage, message) {
+                                    console.log('An error has occurred. Please refresh the page.');
+                                    return false;
+                                }
+                            };
+
+                            // Initialize all tables with error handling
+                            ['#new', '#table', '#special', '#table2', '#table3', '#example', '#medicineTable'].forEach(tableId => {
+                                if ($(tableId).length) {  // Check if table exists
+                                    const table = $(tableId).DataTable(commonConfig);
+
+                                    // Add error event handler to each table
+                                    table.on('error.dt', function (e, settings, techNote, message) {
+                                        console.log('DataTables error: ' + message);
+                                        return false;
+                                    });
+                                }
                             });
                         });
-
 
                         document.addEventListener("DOMContentLoaded", function () {
                             // Set the current month as the default selected value
@@ -2211,7 +2271,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
 
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2315,7 +2375,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['chief_complaint'] ?? 'N/A') . '</td>';
@@ -2406,7 +2466,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['assessment'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2500,7 +2560,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['edc'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_sub'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
@@ -2596,7 +2656,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['case_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2692,7 +2752,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['place_i'] ?? 'N/A') . '</td>';
@@ -2890,6 +2950,30 @@ try {
                             }
                             ?>
                         </select>
+                        <div class="mb-3">
+                            <button type="button" id="toggleSensitiveData" class="btn btn-primary" style = "margin-bottom: 10px; background-color:rgb(0, 0, 0); color: white;">
+                                Show Information
+                            </button>
+                        </div>
+
+                        <script>
+                            document.getElementById('toggleSensitiveData').addEventListener('click', function() {
+                                const button = this;
+                                const sensitiveElements = document.querySelectorAll('.sensitive-data');
+                                
+                                if (button.textContent === 'Show Information') {
+                                    sensitiveElements.forEach(element => {
+                                        element.textContent = element.getAttribute('onmouseover').split("'")[1];
+                                    });
+                                    button.textContent = 'Hide Information';
+                                } else {
+                                    sensitiveElements.forEach(element => {
+                                        element.textContent = '******';
+                                    });
+                                    button.textContent = 'Show Information';
+                                }
+                            });
+                        </script>
 
                         <table id="employeeTable" class="table table-bordered table-striped">
                             <thead class="table-dark">
@@ -2931,9 +3015,9 @@ try {
                                             echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
 
                                             echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                            echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                             echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['bday'] ?? 'N/A') . '</td>';
+                                            echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['bday'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                             echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
