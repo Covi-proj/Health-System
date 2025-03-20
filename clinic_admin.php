@@ -1651,7 +1651,8 @@ try {
                     <div class="input-group">
                         <label style="color: black;" for="full_name">Name :</label>
                         <input type="password" id="full_name" name="name" class="input-field" readonly>
-                        <button type="button" onclick="toggleName()" style="margin-left: 10px;"><i class="fas fa-eye"></i></button>
+                        <button type="button" onclick="toggleName()" style="margin-left: 10px;"><i
+                                class="fas fa-eye"></i></button>
                         <script>
                             function toggleName() {
                                 const nameInput = document.getElementById('full_name');
@@ -1660,7 +1661,7 @@ try {
                                     nameInput.type = 'password';
                                     button.className = 'fas fa-eye';
                                 } else {
-                                    nameInput.type = 'text'; 
+                                    nameInput.type = 'text';
                                     button.className = 'fas fa-eye-slash';
                                 }
                             }
@@ -1676,7 +1677,8 @@ try {
                     <div class="input-group">
                         <label style="color: black;" for="birthday_input">Birthday :</label>
                         <input type="password" id="birthday_input" name="bday" class="input-field" readonly>
-                        <button type="button" onclick="toggleBirthday()" style="margin-left: 10px;"><i class="fas fa-eye"></i></button>
+                        <button type="button" onclick="toggleBirthday()" style="margin-left: 10px;"><i
+                                class="fas fa-eye"></i></button>
                         <script>
                             function toggleBirthday() {
                                 const birthdayInput = document.getElementById('birthday_input');
@@ -1835,11 +1837,12 @@ try {
                         class="fas fa-file" style="background-color: green; font-weight: bold; margin-bottom: 10px;">
                         New Record
                     </button>
+                    <!--recycle
                     <a href="export_fit_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                         text-decoration: none; border-radius: 5px;">
                         Export to Excel
                     </a>
-
+                    -->
                     <div class="filter" style="float: right; display: inline-flex; align-items: center;">
 
                     </div>
@@ -1892,7 +1895,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
@@ -2058,7 +2061,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? $item['guest_name']) . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? $item['guest_name']) . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
@@ -2157,7 +2160,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
@@ -2211,10 +2214,11 @@ try {
                         style="background-color: green; font-weight: bold; margin-bottom: 10px;">
                         New Consultation
                     </button>
+                    <!--recycle
                     <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                         text-decoration: none; border-radius: 5px;">
                         Export to Excel
-                    </a>
+                    </a>-->
                     <div class="filter" style="float: right; display: inline-flex; align-items: center;">
                     </div>
 
@@ -2951,16 +2955,17 @@ try {
                             ?>
                         </select>
                         <div class="mb-3">
-                            <button type="button" id="toggleSensitiveData" class="btn btn-primary" style = "margin-bottom: 10px; background-color:rgb(0, 0, 0); color: white;">
+                            <button type="button" id="toggleSensitiveData" class="btn btn-primary"
+                                style="margin-bottom: 10px; background-color:rgb(0, 0, 0); color: white;">
                                 Show Information
                             </button>
                         </div>
 
                         <script>
-                            document.getElementById('toggleSensitiveData').addEventListener('click', function() {
+                            document.getElementById('toggleSensitiveData').addEventListener('click', function () {
                                 const button = this;
                                 const sensitiveElements = document.querySelectorAll('.sensitive-data');
-                                
+
                                 if (button.textContent === 'Show Information') {
                                     sensitiveElements.forEach(element => {
                                         element.textContent = element.getAttribute('onmouseover').split("'")[1];
@@ -3015,7 +3020,14 @@ try {
                                             echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
 
                                             echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                            echo '<td>
+                                            <span class="sensitive-data" 
+                                                  onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" 
+                                                  onmouseout="this.textContent=\'******\'">
+                                                ******
+                                            </span>
+                                        </td>';
+
                                             echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
                                             echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['bday'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                             echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
@@ -3277,38 +3289,82 @@ try {
             </div>
             <script>
                 $(document).ready(function () {
-                    $('#medicineTable').DataTable({
-                        responsive: true,
-                        paging: true,
-                        searching: true,
-                        ordering: true,
-                        info: true
-                    });
-                });
+                    // Initialize DataTable with custom filtering
+                    var table = $('#medicineTable').DataTable({
+                        initComplete: function () {
+                            // Custom filtering function for dates
+                            $.fn.dataTable.ext.search.push(
+                                function (settings, data, dataIndex) {
+                                    var selectedMonth = $('.date3').val().toLowerCase();
+                                    if (selectedMonth === 'all') return true;
 
+                                    // Get date from the date column (index 3)
+                                    var dateStr = data[3];
+                                    if (!dateStr) return false;
 
-                document.addEventListener("DOMContentLoaded", function () {
-                    // Set the current month as the default selected value
+                                    try {
+                                        // Parse the date string to get the month name
+                                        var date = new Date(dateStr);
+                                        var monthName = date.toLocaleString('en-US', { month: 'long' }).toLowerCase();
+                                        return monthName === selectedMonth;
+                                    } catch (e) {
+                                        return false;
+                                    }
+                                }
+                            );
 
-                    const dateSelect = document.getElementById('date3');
-                    dateSelect.value = all;
-                    filterdate3();  // Apply the filter by current month on page load
-                });
+                            // Apply the date filter
+                            $('.date3').on('change', function () {
+                                table.draw();
+                            });
 
-                function filterdate3() {
-                    const selectedMonth = document.getElementById('date3').value;
-                    const rows = document.querySelectorAll('#medicineTable tbody tr');
+                            // Apply the medicine filter
+                            // Apply the date filter
+                            $('.date3').on('change', function () {
+                                var month = $(this).val().toLowerCase();
+                                if (month === 'all') {
+                                    table.column(3).search('').draw();
+                                } else {
+                                    table.column(3).search(month).draw();
+                                }
+                            });
 
-                    rows.forEach(row => {
-                        const dateCell = row.cells[2].textContent.trim(); // Date cell is in the 4th column
-                        const rowMonth = new Date(dateCell).toLocaleString('default', { month: 'long' }).toLowerCase();
-
-                        if (selectedMonth === 'all' || rowMonth === selectedMonth) {
-                            row.style.display = '';  // Show the row
-                        } else {
-                            row.style.display = 'none';  // Hide the row
+                            // Apply the medicine filter
+                            $('#companyFilter').on('change', function () {
+                                var medicine = $(this).val();
+                                table.column(0).search(medicine).draw();
+                            });
                         }
                     });
+                });
+
+                function filterData() {
+                    // Prevent default page reload behavior
+                    const filterValue = document.getElementById('companyFilter').value;
+                    var table = $('#medicineTable').DataTable();
+                    table.column(0).search(filterValue).draw();
+                    return false;
+                }
+
+                function filterdate3() {
+                    var selectedMonth = document.getElementById("date3").value; // Get selected month
+                    var table = document.getElementById("medicineTable"); // Get table
+                    var rows = table.getElementsByTagName("tr"); // Get all rows
+
+                    for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
+                        var dateCell = rows[i].getElementsByTagName("td")[3]; // Column index 3 (Date Received)
+
+                        if (dateCell) {
+                            var dateText = dateCell.textContent.trim(); // Get the text inside the date column
+                            var month = new Date(dateText).toLocaleString('default', { month: 'long' }).toLowerCase(); // Extract month
+
+                            if (selectedMonth === "all" || month === selectedMonth) {
+                                rows[i].style.display = ""; // Show row
+                            } else {
+                                rows[i].style.display = "none"; // Hide row
+                            }
+                        }
+                    }
                 }
 
 
