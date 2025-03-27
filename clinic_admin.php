@@ -1639,7 +1639,7 @@ try {
                 </li>
 
                 <li onclick="showPage('equip')">
-                <i class="fas fa-person-dress"></i></i>Maternity Equipment
+                    <i class="fas fa-person-dress"></i></i>Maternity Equipment
                 </li>
 
                 <li onclick="showPage('profile')">
@@ -1686,26 +1686,43 @@ try {
                     function filterTable() {
                         var itemTypeFilterValue = document.getElementById("itemTypeFilter").value.toLowerCase();
                         var statusFilterValue = document.getElementById("statusFilter").value.toLowerCase();
-                        var rows = document.querySelectorAll("#equipmentTable tbody tr");
+                        var table = $('#equipmentTable').DataTable();
 
-                        rows.forEach(row => {
-                            var itemType = row.querySelector(".item-type").textContent.toLowerCase();
-                            var status = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            var itemType = data[1].toLowerCase();
+                            var status = data[3].toLowerCase();
 
                             if ((itemTypeFilterValue === "" || itemType.includes(itemTypeFilterValue)) &&
                                 (statusFilterValue === "" || status.includes(statusFilterValue))) {
-                                row.style.display = "";
-                            } else {
-                                row.style.display = "none";
+                                return true;
+                            }
+                            return false;
+                        });
+
+                        table.draw();
+                    }
+
+                    $(document).ready(function () {
+                        $('#equipmentTable').DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            responsive: true,
+                            info: true,
+                            lengthMenu: [5, 10, 25, 50],
+                            language: {
+                                emptyTable: "No records available",
+                                zeroRecords: "No matching records found"
                             }
                         });
-                    }
+                    });
                 </script>
-                <table id="equipmentTable" class="display">
+
+                <table id="equipmentTable" class="display table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Item No.</th>
-                            <th>Item Type</th>
+                            <th>Item Name</th>
                             <th>Date Arrived</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -1745,46 +1762,75 @@ try {
                     </tbody>
                 </table>
 
-                <script>
-                    function filterTable() {
-                        var filterValue = document.getElementById("itemTypeFilter").value.toLowerCase();
-                        var rows = document.querySelectorAll("#equipmentTable tbody tr");
+                <div  style="margin-top: 20px;">
 
-                        rows.forEach(row => {
-                            var itemType = row.querySelector(".item-type").textContent.toLowerCase();
+                <h2 style="color: black;">Borrow Record</h2>
+                <table id="borrowedItemsTable" class="display table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee ID</th>
+                            
+                            <th>Employee Name</th>
+                            <th>Item No.</th>
+                            <th>Item Name</th>
+                            <th>Borrow Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        try {
+                            // Corrected query
+                            $stmt = $pdo->prepare("SELECT br.id, e.name AS name, e.emp_id, e.emp_no, br.item_no, br.item_name, br.borrow_date, br.return_date, br.status, br.quantity
+                           FROM borrow_records br
+                           JOIN employees e ON br.emp_id = e.emp_id");
+                            $stmt->execute();
 
-                            if (filterValue === "" || itemType === filterValue) {
-                                row.style.display = "";
+                            // Fetch all rows as an associative array
+                            $borrowedData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                            // Check if data exists
+                            if (!empty($borrowedData)) {
+                                foreach ($borrowedData as $item) {
+                                    echo '<tr>';
+                                    echo '<td>' . htmlspecialchars($item['id']) . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['emp_no']) . '</td>';
+                                    echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', htmlspecialchars($item['name'])) . '</td>'; // Fixed
+                                    echo '<td>' . htmlspecialchars($item['item_no']) . '</td>'; // Fixed
+                                    
+                                    echo '<td>' . htmlspecialchars($item['item_name']) . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['borrow_date']) . '</td>';
+                                    echo '<td>' . (isset($item['return_date']) ? htmlspecialchars($item['return_date']) : 'N/A') . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['status']) . '</td>';
+                                    echo '<td>' . (isset($item['quantity']) ? htmlspecialchars($item['quantity']) : 'N/A') . '</td>';
+                                    echo '</tr>';
+                                }
                             } else {
-                                row.style.display = "none";
+                                echo '<tr><td colspan="7" class="text-center">No records found</td></tr>';
                             }
-                        });
-                    }
-                </script>
-
-
+                        } catch (PDOException $e) {
+                            echo '<tr><td colspan="7" class="text-center">Error fetching data: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
 
                 <script>
-
-                    $(document).ready(function () {
-                        // Disable DataTables error alerts
-                        $.fn.dataTable.ext.errMode = 'none';
-                        
-                        // Initialize the equipment table
-                        $('#equipmentTable').DataTable({
-                            paging: true,
-                            searching: true,
-                            ordering: true,
-                            responsive: true,
-                            info: true,
-                            lengthMenu: [5, 10, 25, 50],
-                            language: {
-                                emptyTable: "No records available",
-                                zeroRecords: "No matching records found"
+                    $(document).ready(function() {
+                        $.fn.dataTable.ext.errMode = 'none'; // Disable DataTables error alerts
+                        $('#borrowedItemsTable').DataTable({
+                            "language": {
+                                "emptyTable": "No records available",
+                                "zeroRecords": "No matching records found"
                             }
                         });
                     });
                 </script>
+
+</div>
 
             </div>
 
