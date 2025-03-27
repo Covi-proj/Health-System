@@ -48,12 +48,11 @@ try {
     <title>Health-e | Clinic</title>
     <link rel="icon" href="icon.jfif" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <!--table duplicate-->
     <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -64,7 +63,6 @@ try {
     <!--med duplicate -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <!--Dashboard duplicate -->
 
@@ -201,6 +199,25 @@ try {
 
         .sidebar ul li.active {
             border-left: 5px solid #fff;
+        }
+
+        .logout {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .logout:hover {
+            background-color: black;
+        }
+
+        .logout i {
+            margin-right: 10px;
         }
 
         /* Content Area */
@@ -631,7 +648,7 @@ try {
         }
 
         .logout {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             left: 20px;
             color: white;
@@ -1608,9 +1625,7 @@ try {
         <div class="sidebar">
             <h1><i class="fas fa-chart-bar"></i> Reports</h1>
 
-
             <ul>
-
                 <li onclick="showPage('patient_mr')">
                     <i class="fas fa-file-medical"></i> Patients Medical Record
                 </li>
@@ -1623,16 +1638,155 @@ try {
                     <i class="fas fa-pills"></i> Medicine Inventory
                 </li>
 
+                <li onclick="showPage('equip')">
+                <i class="fas fa-person-dress"></i></i>Maternity Equipment
+                </li>
+
                 <li onclick="showPage('profile')">
                     <i class="fas fa-user"></i> User Profile
                 </li>
-
             </ul>
             <span id="logout" onclick="logout()" class="logout"> <i class="fas fa-sign-out-alt"></i> Sign Out</span>
-
         </div>
 
         <div class="content">
+
+            <div class="page" id="equip">
+
+                <h2 style="color: black;">Maternity Equipment</h2>
+                <button id="addItemButton" onclick="window.location.href='add_item_form.php';" class="fas fa-plus"
+                    style="background-color: green; color: white; font-weight: bold; margin-bottom: 10px;">
+                    Add Item
+                </button>
+
+                <select id="itemTypeFilter" class="form-select" required onchange="filterTable()">
+                    <option value="">--Select Item Type--</option>
+                    <?php
+                    try {
+                        // Query to fetch distinct item types from tbl_item
+                        $stmt = $pdo->prepare("SELECT DISTINCT item_type FROM tbl_item");
+                        $stmt->execute();
+
+                        // Fetch and populate the select options
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<option value="' . htmlspecialchars($row['item_type']) . '">' . htmlspecialchars($row['item_type']) . '</option>';
+                        }
+                    } catch (PDOException $e) {
+                        echo '<option value="">Error fetching item types</option>';
+                    }
+                    ?>
+                </select>
+                <select id="statusFilter" class="form-select" required onchange="filterTable()">
+                    <option value="">--Select Status--</option>
+                    <option value="Available">Available</option>
+                    <option value="Borrowed">Borrowed</option>
+                </select>
+
+                <script>
+                    function filterTable() {
+                        var itemTypeFilterValue = document.getElementById("itemTypeFilter").value.toLowerCase();
+                        var statusFilterValue = document.getElementById("statusFilter").value.toLowerCase();
+                        var rows = document.querySelectorAll("#equipmentTable tbody tr");
+
+                        rows.forEach(row => {
+                            var itemType = row.querySelector(".item-type").textContent.toLowerCase();
+                            var status = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
+
+                            if ((itemTypeFilterValue === "" || itemType.includes(itemTypeFilterValue)) &&
+                                (statusFilterValue === "" || status.includes(statusFilterValue))) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    }
+                </script>
+                <table id="equipmentTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Item No.</th>
+                            <th>Item Type</th>
+                            <th>Date Arrived</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        try {
+                            // Query to fetch data
+                            $stmt = $pdo->prepare("SELECT * FROM tbl_item ORDER BY date_arrive ASC");
+                            $stmt->execute();
+
+                            // Fetch all rows as an associative array
+                            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                            // Check if data exists
+                            if (!empty($data)) {
+                                foreach ($data as $item) {
+                                    echo '<tr>';
+                                    echo '<td>' . htmlspecialchars($item['item_no']) . '</td>';
+                                    echo '<td class="item-type">' . htmlspecialchars($item['item_type']) . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['date_arrive']) . '</td>';
+                                    echo '<td>' . htmlspecialchars($item['status']) . '</td>';
+                                    echo '<td class="text-center">';
+                                    echo '<a href="edit_item.php?id=' . htmlspecialchars($item['id']) . '" class="link-dark fas fa-pen-to-square"></a>';
+                                    echo '<a href="delete_item.php?id=' . htmlspecialchars($item['id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                    echo '</td>';
+                                    echo '</tr>';
+                                }
+                            } else {
+                                echo '<tr><td colspan="5" class="text-center">No records found</td></tr>';
+                            }
+                        } catch (PDOException $e) {
+                            echo '<tr><td colspan="5" class="text-center">Error fetching data: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
+                <script>
+                    function filterTable() {
+                        var filterValue = document.getElementById("itemTypeFilter").value.toLowerCase();
+                        var rows = document.querySelectorAll("#equipmentTable tbody tr");
+
+                        rows.forEach(row => {
+                            var itemType = row.querySelector(".item-type").textContent.toLowerCase();
+
+                            if (filterValue === "" || itemType === filterValue) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    }
+                </script>
+
+
+
+                <script>
+
+                    $(document).ready(function () {
+                        // Disable DataTables error alerts
+                        $.fn.dataTable.ext.errMode = 'none';
+                        
+                        // Initialize the equipment table
+                        $('#equipmentTable').DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            responsive: true,
+                            info: true,
+                            lengthMenu: [5, 10, 25, 50],
+                            language: {
+                                emptyTable: "No records available",
+                                zeroRecords: "No matching records found"
+                            }
+                        });
+                    });
+                </script>
+
+            </div>
 
 
             <!--Forms-->
@@ -1651,21 +1805,7 @@ try {
                     <div class="input-group">
                         <label style="color: black;" for="full_name">Name :</label>
                         <input type="password" id="full_name" name="name" class="input-field" readonly>
-                        <button type="button" onclick="toggleName()" style="margin-left: 10px;"><i
-                                class="fas fa-eye"></i></button>
-                        <script>
-                            function toggleName() {
-                                const nameInput = document.getElementById('full_name');
-                                const button = event.currentTarget.querySelector('i');
-                                if (nameInput.type === 'text') {
-                                    nameInput.type = 'password';
-                                    button.className = 'fas fa-eye';
-                                } else {
-                                    nameInput.type = 'text';
-                                    button.className = 'fas fa-eye-slash';
-                                }
-                            }
-                        </script>
+
                     </div>
 
                     <!-- Age and Birthday Row 2-->
@@ -1677,21 +1817,7 @@ try {
                     <div class="input-group">
                         <label style="color: black;" for="birthday_input">Birthday :</label>
                         <input type="password" id="birthday_input" name="bday" class="input-field" readonly>
-                        <button type="button" onclick="toggleBirthday()" style="margin-left: 10px;"><i
-                                class="fas fa-eye"></i></button>
-                        <script>
-                            function toggleBirthday() {
-                                const birthdayInput = document.getElementById('birthday_input');
-                                const button = event.currentTarget.querySelector('i');
-                                if (birthdayInput.type === 'text') {
-                                    birthdayInput.type = 'password';
-                                    button.className = 'fas fa-eye';
-                                } else {
-                                    birthdayInput.type = 'text';
-                                    button.className = 'fas fa-eye-slash';
-                                }
-                            }
-                        </script>
+
                     </div>
 
                     <!-- Gender and Section/Dept. Row 3-->
@@ -1828,7 +1954,7 @@ try {
                 <!-- Tab Contents -->
 
                 <!--fit to work-->
-                <div id="fit_work_tab" class="tab-content active">
+                <div id="fit_work_tab" class="tab-content active" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Fit To Work</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
 
@@ -1895,7 +2021,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
@@ -2010,7 +2136,7 @@ try {
                 <!--end fit to work-->
 
                 <!--Medicine-->
-                <div id="medication_tab" class="tab-content">
+                <div id="medication_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Medicine</h3>
                     <button
                         onclick="window.location.href='new_medicine.php?emp_id=' + document.getElementById('emp_id').value;"
@@ -2061,7 +2187,8 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? $item['guest_name']) . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name'] . ' ' . $item['guest_name']) . '</td>';
+
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
@@ -2109,7 +2236,7 @@ try {
                 <!--end medicine-->
 
                 <!--vital signs-->
-                <div id="vital_signs_tab" class="tab-content">
+                <div id="vital_signs_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Vital Signs</h3>
                     <button class="fas fa-plus"
                         onclick="window.location.href='vital_signs.php?emp_id=' + document.getElementById('emp_id').value;"
@@ -2160,7 +2287,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
@@ -2204,7 +2331,7 @@ try {
                 <!--end vital signs-->
 
                 <!--consultation-->
-                <div id="consultation_tab" class="tab-content">
+                <div id="consultation_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Consultation</h3>
                     <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
 
@@ -2275,7 +2402,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
 
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2379,7 +2506,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['chief_complaint'] ?? 'N/A') . '</td>';
@@ -2421,7 +2548,7 @@ try {
                 <!--end confinement-->
 
                 <!--sent home-->
-                <div id="sent_home_tab" class="tab-content">
+                <div id="sent_home_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Sent Home</h3>
                     <button class="fas fa-plus"
                         onclick="window.location.href='sent_home.php?emp_id=' + document.getElementById('emp_id').value;"
@@ -2470,7 +2597,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['assessment'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2536,6 +2663,7 @@ try {
                                 <th>Arpron Date Released</th>
                                 <th>Date Arpon Returned</th>
                                 <th>Chair Released</th>
+                                <th>Date of Chair Returned</th>
                                 <th>Action</th>
                             </tr> <!-- Added closing </tr> -->
                         </thead>
@@ -2564,7 +2692,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['edc'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_sub'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
@@ -2575,6 +2703,7 @@ try {
                                         echo '<td>' . htmlspecialchars($item['adr'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['dar'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['cdr'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['dcr'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="edit_preg.php?emp_id=' . $item['emp_id'] . '&pn_id=' . $item['pn_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href="delete_preg.php?pn_id=' . htmlspecialchars($item['pn_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
@@ -2609,7 +2738,7 @@ try {
                 <!--end pregnant notification-->
 
                 <!--special case-->
-                <div id="special_case_tab" class="tab-content">
+                <div id="special_case_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color:black;">Special Case</h3>
                     <button class="fas fa-plus"
                         onclick="window.location.href='special_case.php?emp_id=' + document.getElementById('emp_id').value;"
@@ -2660,8 +2789,9 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
-                                        echo '<td>' . htmlspecialchars($item['case_no'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars(str_pad($item['sc_id'] ?? 'N/A', 6, '0', STR_PAD_LEFT)) . '</td>';
+
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['retain'] ?? 'N/A') . '</td>';
@@ -2708,7 +2838,7 @@ try {
                 <!--end special case-->
 
                 <!--incident report tab-->
-                <div id="incident_report_tab" class="tab-content">
+                <div id="incident_report_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
                     <h3 style="color: black;">Incident Accident Report</h3>
                     <button class="fas fa-plus"
                         onclick="window.location.href='incident_report.php?emp_id=' + document.getElementById('emp_id').value;"
@@ -2756,7 +2886,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
+                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['place_i'] ?? 'N/A') . '</td>';
@@ -2954,31 +3084,7 @@ try {
                             }
                             ?>
                         </select>
-                        <div class="mb-3">
-                            <button type="button" id="toggleSensitiveData" class="btn btn-primary"
-                                style="margin-bottom: 10px; background-color:rgb(0, 0, 0); color: white;">
-                                Show Information
-                            </button>
-                        </div>
 
-                        <script>
-                            document.getElementById('toggleSensitiveData').addEventListener('click', function () {
-                                const button = this;
-                                const sensitiveElements = document.querySelectorAll('.sensitive-data');
-
-                                if (button.textContent === 'Show Information') {
-                                    sensitiveElements.forEach(element => {
-                                        element.textContent = element.getAttribute('onmouseover').split("'")[1];
-                                    });
-                                    button.textContent = 'Hide Information';
-                                } else {
-                                    sensitiveElements.forEach(element => {
-                                        element.textContent = '******';
-                                    });
-                                    button.textContent = 'Show Information';
-                                }
-                            });
-                        </script>
 
                         <table id="employeeTable" class="table table-bordered table-striped">
                             <thead class="table-dark">
@@ -3020,14 +3126,7 @@ try {
                                             echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
 
                                             echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>
-                                            <span class="sensitive-data" 
-                                                  onmouseover="this.textContent=\'' . htmlspecialchars($item['name'] ?? 'N/A') . '\'" 
-                                                  onmouseout="this.textContent=\'******\'">
-                                                ******
-                                            </span>
-                                        </td>';
-
+                                            echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
                                             echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
                                             echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['bday'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
                                             echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
@@ -3347,18 +3446,21 @@ try {
                 }
 
                 function filterdate3() {
-                    var selectedMonth = document.getElementById("date3").value; // Get selected month
-                    var table = document.getElementById("medicineTable"); // Get table
-                    var rows = table.getElementsByTagName("tr"); // Get all rows
+                    let selectedMonth = document.getElementById("date3").value.toLowerCase();
+                    let table = document.getElementById("medicineTable");
+                    let rows = table.getElementsByTagName("tr");
 
-                    for (var i = 1; i < rows.length; i++) { // Start from index 1 to skip the header row
-                        var dateCell = rows[i].getElementsByTagName("td")[3]; // Column index 3 (Date Received)
+                    for (let i = 1; i < rows.length; i++) { // Skip the header row
+                        let dateCell = rows[i].getElementsByTagName("td")[3]; // Date Received column
 
                         if (dateCell) {
-                            var dateText = dateCell.textContent.trim(); // Get the text inside the date column
-                            var month = new Date(dateText).toLocaleString('default', { month: 'long' }).toLowerCase(); // Extract month
+                            let dateText = dateCell.textContent.trim(); // Example: "2025-03-21"
+                            let monthIndex = new Date(dateText).getMonth(); // Get month (0-11)
 
-                            if (selectedMonth === "all" || month === selectedMonth) {
+                            let monthNames = ["january", "february", "march", "april", "may", "june",
+                                "july", "august", "september", "october", "november", "december"];
+
+                            if (selectedMonth === "all" || monthNames[monthIndex] === selectedMonth) {
                                 rows[i].style.display = ""; // Show row
                             } else {
                                 rows[i].style.display = "none"; // Hide row
@@ -3366,6 +3468,7 @@ try {
                         }
                     }
                 }
+
 
 
                 // Auto-hide success message after 5 seconds
@@ -3466,6 +3569,10 @@ try {
 
             } else if (hash === '#preg') {
                 showPage('preg');// Show the pregnant notification
+
+            } else if (hash === '#equip') {
+                showPage('equip');
+
             }
             else if (hash === '#profile') {
                 showPage('profile'); // Show the fit section
@@ -3528,6 +3635,42 @@ try {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        // Sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            let sidebar = document.querySelector(".sidebar");
+            let closeBtn = document.querySelector("#btn");
+
+            closeBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                menuBtnChange();
+            });
+
+            function menuBtnChange() {
+                if (sidebar.classList.contains("open")) {
+                    closeBtn.classList.replace("fa-bars", "fa-times");
+                } else {
+                    closeBtn.classList.replace("fa-times", "fa-bars");
+                }
+            }
+
+            // Show tooltips only when sidebar is closed
+            const tooltips = document.querySelectorAll('.tooltip');
+            sidebar.addEventListener('mouseover', () => {
+                if (!sidebar.classList.contains('open')) {
+                    tooltips.forEach(tooltip => {
+                        tooltip.style.display = 'block';
+                    });
+                }
+            });
+
+            sidebar.addEventListener('mouseout', () => {
+                tooltips.forEach(tooltip => {
+                    tooltip.style.display = 'none';
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
