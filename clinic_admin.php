@@ -1676,10 +1676,22 @@ try {
                     }
                     ?>
                 </select>
-                <select id="statusFilter" class="form-select" required onchange="filterTable()">
+                <select id="statusFilter" class="form-select" required onchange="filterTable_status()">
                     <option value="">--Select Status--</option>
-                    <option value="Available">Available</option>
-                    <option value="Borrowed">Borrowed</option>
+                    <?php
+                    try {
+                        // Query to fetch distinct item types from tbl_item
+                        $stmt = $pdo->prepare("SELECT DISTINCT status FROM tbl_item");
+                        $stmt->execute();
+
+                        // Fetch and populate the select options
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<option value="' . htmlspecialchars($row['status']) . '">' . htmlspecialchars($row['status']) . '</option>';
+                        }
+                    } catch (PDOException $e) {
+                        echo '<option value="">Error fetching item types</option>';
+                    }
+                    ?>
                 </select>
 
                 <script>
@@ -1688,12 +1700,15 @@ try {
                         var statusFilterValue = document.getElementById("statusFilter").value.toLowerCase();
                         var table = $('#equipmentTable').DataTable();
 
+                        // Clear previous search functions
+                        $.fn.dataTable.ext.search = [];
+
                         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                             var itemType = data[1].toLowerCase();
                             var status = data[3].toLowerCase();
 
-                            if ((itemTypeFilterValue === "" || itemType.includes(itemTypeFilterValue)) &&
-                                (statusFilterValue === "" || status.includes(statusFilterValue))) {
+                            if ((itemTypeFilterValue === "" || itemType === itemTypeFilterValue) &&
+                                (statusFilterValue === "" || status === statusFilterValue)) {
                                 return true;
                             }
                             return false;
@@ -1701,6 +1716,26 @@ try {
 
                         table.draw();
                     }
+
+                    function filterTable_status() {
+                        var statusFilterValue = document.getElementById("statusFilter").value.toLowerCase();
+                        var table = $('#equipmentTable').DataTable();
+                       
+
+                        // Clear previous search functions
+                        $.fn.dataTable.ext.search = [];
+
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            var status = data[3].toLowerCase(); 
+                    
+                            if ((statusFilterValue === "" || status === statusFilterValue)) {
+                                return true;
+                            }
+                            return false;
+                        });
+
+                        table.draw();
+                    }   
 
                     $(document).ready(function () {
                         $('#equipmentTable').DataTable({
@@ -1765,12 +1800,49 @@ try {
                 <div  style="margin-top: 20px;">
 
                 <h2 style="color: black;">Borrow Record</h2>
+
+                <select id="status_filter" class="form-select" required onchange="status()">
+                    <option value="">--Select Status--</option>
+                    <?php
+                    try {
+                        // Query to fetch distinct statuses from borrow_records
+                        $stmt = $pdo->prepare("SELECT DISTINCT status FROM borrow_records");
+                        $stmt->execute();
+
+                        // Fetch and populate the select options
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            echo '<option value="' . htmlspecialchars($row['status']) . '">' . htmlspecialchars($row['status']) . '</option>';
+                        }
+                    } catch (PDOException $e) {
+                        echo '<option value="">Error fetching statuses</option>';
+                    }
+                    ?>
+                </select>
+                <script>
+                function status() {
+                        var statusValue = document.getElementById("status_filter").value.toLowerCase();
+                        var table = $('#borrowedItemsTable').DataTable();
+                       
+                        // Clear previous search functions
+                        $.fn.dataTable.ext.search = [];
+
+                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                            var status = data[7].toLowerCase(); 
+                    
+                            if ((statusValue === "" || status === statusValue)) {
+                                return true;
+                            }
+                            return false;
+                        });
+
+                        table.draw();
+                    }   
+                    </script>
                 <table id="borrowedItemsTable" class="display table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Employee ID</th>
-                            
+                            <th>Employee ID</th> 
                             <th>Employee Name</th>
                             <th>Item No.</th>
                             <th>Item Name</th>
@@ -1891,6 +1963,7 @@ try {
                     function searchUser() {
                         const emp = document.getElementById('emp_number').value;
 
+
                         // Ensure the emp field isn't empty before proceeding
                         if (!emp) {
                             alert("Please enter Employee No.");
@@ -1944,7 +2017,7 @@ try {
 
                     document.getElementById('emp_number').addEventListener('input', function () {
                         const searchValue = this.value.trim();
-                        const tables = document.querySelectorAll('table:not(#employeeTable):not(#medicineTable)'); // Select all tables
+                        const tables = document.querySelectorAll('table:not(#employeeTable):not(#medicineTable):not(#borrowedItemsTable):not(#equipmentTable)'); // Select all tables
 
                         tables.forEach(table => {
                             console.log("Checking table:", table.id); // Debugging
@@ -2023,6 +2096,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>From</th>
@@ -2055,7 +2129,7 @@ try {
                                     SELECT tbl_fittowork.*, employees.emp_no, employees.name
                                     FROM tbl_fittowork
                                     LEFT JOIN employees ON tbl_fittowork.emp_id = employees.emp_id
-                                    ORDER BY tbl_fittowork.date ASC
+                                    ORDER BY tbl_fittowork.f_id DESC
                                     ");
                                 $stmt->execute();
 
@@ -2068,6 +2142,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['f_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
@@ -2192,6 +2267,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th style="width: 100px;">Name</th>
+                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Reason</th>
                                 <th>Medicine</th>
@@ -2221,7 +2297,7 @@ try {
                                 SELECT tbl_medicine.*, employees.emp_no, employees.name
                                 FROM tbl_medicine
                                 LEFT JOIN employees ON tbl_medicine.emp_id = employees.emp_id
-                                ORDER BY tbl_medicine.date ASC
+                                ORDER BY tbl_medicine.med_id DESC
                                 ");
                                 $stmt->execute();
 
@@ -2234,7 +2310,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name'] . ' ' . $item['guest_name']) . '</td>';
-
+                                        echo '<td>' . htmlspecialchars($item['med_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['medicine'] ?? 'N/A') . '</td>';
@@ -2292,6 +2368,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Blood Pressure</th>
@@ -2321,7 +2398,7 @@ try {
                                 SELECT tbl_vitalsgn.*, employees.emp_no, employees.name
                                 FROM tbl_vitalsgn
                                 LEFT JOIN employees ON tbl_vitalsgn.emp_id = employees.emp_id
-                                ORDER BY tbl_vitalsgn.date ASC
+                                ORDER BY tbl_vitalsgn.vt_id DESC
                                 ");
                                 $stmt->execute();
 
@@ -2334,6 +2411,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['vt_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
@@ -2400,6 +2478,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Date</th>
                                 <th>Diagnosis</th>
                                 <th>Physician</th>
@@ -2435,7 +2514,7 @@ try {
                                 tbl_consultation.cons_id
                                 FROM tbl_consultation
                                 LEFT JOIN employees ON tbl_consultation.emp_id = employees.emp_id
-                                ORDER BY tbl_consultation.date ASC 
+                                ORDER BY tbl_consultation.cons_id DESC 
                                 ";
                                 $stmt = $pdo->prepare($query);
                                 $stmt->execute();
@@ -2449,6 +2528,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['cons_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
 
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2518,6 +2598,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Date of Visit</th>
                                 <th>Time of Visit</th>
                                 <th>Chief Complaint</th>
@@ -2553,6 +2634,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['con_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_of_visit'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['chief_complaint'] ?? 'N/A') . '</td>';
@@ -2604,6 +2686,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Reason</th>
                                 <th>Assessment</th>
                                 <th>Diagnosis</th>
@@ -2644,6 +2727,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['sh_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['assessment'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
@@ -2699,6 +2783,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>EDC</th>
                                 <th>Date Submited</th>
                                 <th>Remarks</th>
@@ -2739,6 +2824,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['pn_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['edc'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_sub'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
@@ -2894,6 +2980,7 @@ try {
                             <tr class="med">
                                 <th>Employee No.</th>
                                 <th>Name</th>
+                                <th>ID</th>
                                 <th>Date of Incident</th>
                                 <th>Time of Incident</th>
                                 <th>Place of incident</th>
@@ -2933,6 +3020,7 @@ try {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
                                         echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['ir_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['place_i'] ?? 'N/A') . '</td>';
@@ -3256,10 +3344,12 @@ try {
                 <!-- New Medicine Button -->
                 <button id="toggleForm" onclick="window.location.href='new_med.php';" class="fas fa-pills"
                     style="background-color: green; font-weight: bold; margin-bottom: 15px;"> New Medicine</button>
+                    <!-- 
                 <a href="export_med_inventory.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                   text-decoration: none; border-radius: 5px;">
                     Export to Excel
                 </a>
+                Export to Excel Button -->
                 <!--Count Medicines-->
                 <div class="modal-body">
                     <?php
