@@ -1571,13 +1571,28 @@ try {
 
         }
 
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
         /*form layout*/
     </style>
 
 </head>
 
 <body>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="navbar">
         <div class="left-content">
             <span class="logo">
@@ -1623,9 +1638,12 @@ try {
 
     <div class="container">
         <div class="sidebar">
-            <h1><i class="fas fa-chart-bar"></i> Reports</h1>
 
             <ul>
+                <li onclick="showPage('dashboard')" class = "active">
+                    <i class="fas fa-chart-bar"></i> Dashboard
+                </li>
+
                 <li onclick="showPage('patient_mr')">
                     <i class="fas fa-file-medical"></i> Patients Medical Record
                 </li>
@@ -1650,6 +1668,220 @@ try {
         </div>
 
         <div class="content">
+            <div class="page active" id="dashboard">
+
+                <div class="container-fluid py-4">
+                    <h1 class="mb-4" style = "color: black;">Dashboard</h1>
+
+                        <div class="row">
+                            <!-- Total Employees Card -->
+                            <div class="col-md-4">
+                                <div class="dashboard-card">
+                                    <h1 style = "color: black;">Total Employees</h1>
+                                    <?php
+                                    $host = 'localhost';
+                                    $db = 'e_system';
+                                    $user = 'root';
+                                    $pass = '';
+
+                                    try {
+                                        $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                        $stmt = $pdo->query("SELECT COUNT(*) as total FROM employees");
+                                        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                        echo '<div class="stat-card">';
+                                        echo '<h2 style = "color: black;"> Total Registered Employees: ' . $result['total'] . '</h2>';
+                            
+                                        echo '</div>';
+                                    } catch (PDOException $e) {
+                                        echo '<div class="alert alert-danger">Error: ' . $e->getMessage() . '</div>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="modal-body">
+                                <?php
+                                // Database connection settings
+                                $host = 'localhost';
+                                $db = 'e_system';
+                                $user = 'root';
+                                $pass = '';
+
+                                try {
+                                    // Create PDO instance
+                                    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                    // SQL query to calculate the total quantity of each Med_name in medicines
+                                    $sqlMedicines = "SELECT Med_name, SUM(quantity) AS quantity FROM medicines GROUP BY Med_name";
+                                    $stmtMedicines = $pdo->prepare($sqlMedicines);
+                                    $stmtMedicines->execute();
+                                    $medicinesData = $stmtMedicines->fetchAll(PDO::FETCH_ASSOC);
+
+                                    // SQL query to calculate the total quantity of each medicine in tbl_medicine
+                                    $sqlTblMedicine = "SELECT medicine, SUM(quantity) AS quantity FROM tbl_medicine GROUP BY medicine";
+                                    $stmtTblMedicine = $pdo->prepare($sqlTblMedicine);
+                                    $stmtTblMedicine->execute();
+                                    $tblMedicineData = $stmtTblMedicine->fetchAll(PDO::FETCH_ASSOC);
+
+                                    // Create a map for tbl_medicine quantities
+                                    $tblMedicineMap = [];
+                                    foreach ($tblMedicineData as $row) {
+                                        $tblMedicineMap[$row['medicine']] = $row['quantity'];
+                                    }
+
+                                    // Display the data in a horizontal scrollable list with subtraction logic
+                                    echo "<div class='horizontal-scroll' style='display: flex; gap: 10px; max-width: 100%; overflow-x: auto; padding: 10px;'>";
+                                    foreach ($medicinesData as $item) {
+                                        $medName = $item['Med_name'];
+                                        $medQuantity = $item['quantity'];
+                                        $tblQuantity = $tblMedicineMap[$medName] ?? 0; // Default to 0 if no match in tbl_medicine
+                                
+                                        // Subtract quantities
+                                        $resultQuantity = $medQuantity - $tblQuantity;
+
+                                        // Check if the result quantity is below 25, change background color to red
+                                        $backgroundColor = $resultQuantity < 25 ? 'background-color: red;' : 'background-color: rgb(0, 0, 0);';
+                                        $refillMessage = $resultQuantity < 25 ? '<p style="color: yellow;">Needs to Refill</p>' : '';
+
+                                        // Display each item with dynamic background color
+                                        echo "<div class='item' style='min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; $backgroundColor text-align: center; font-weight:bold; color: white;'>";
+                                        echo htmlspecialchars($medName) . " — " . htmlspecialchars($resultQuantity);
+                                        echo "</div>";
+                                    }
+                                    echo "</div>";
+                                } catch (PDOException $e) {
+                                    echo 'Error: ' . $e->getMessage();
+                                }
+                                ?>
+                            </div>
+
+                            <!-- Medicine Usage by Reason -->
+                            <div class="col-md-8">
+                                <div class="dashboard-card">
+                                    <h1 style = "color: black;">Medicine Usage by Reason</h1>
+                                    <canvas id="reasonChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medicine Usage Details -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="dashboard-card">
+                                    <h4>Medicine Usage Details</h4>
+                                    <div class="table-responsive">
+                                        <table id="medicineUsageTable" class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Reason</th>
+                                                    <th>Medicine</th>
+                                                    <th>Count</th>
+                                                    <th>Total Quantity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                try {
+                                                    $stmt = $pdo->query("
+                                                 SELECT 
+                                                reason,
+                                                medicine,
+                                                COUNT(*) as count,
+                                                SUM(quantity) as total_quantity
+                                                FROM tbl_medicine
+                                                GROUP BY reason, medicine
+                                                ORDER BY count DESC
+                                                ");
+
+                                                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                                        echo '<tr>';
+                                                        echo '<td>' . htmlspecialchars($row['reason']) . '</td>';
+                                                        echo '<td>' . htmlspecialchars($row['medicine']) . '</td>';
+                                                        echo '<td>' . $row['count'] . '</td>';
+                                                        echo '<td>' . $row['total_quantity'] . '</td>';
+                                                        echo '</tr>';
+                                                    }
+                                                } catch (PDOException $e) {
+                                                    echo '<tr><td colspan="4" class="text-danger">Error: ' . $e->getMessage() . '</td></tr>';
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+
+
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#medicineUsageTable').DataTable({
+                                                    paging: true,
+                                                    searching: true,
+                                                    ordering: true,
+                                                    responsive: true,
+                                                    lengthMenu: [5, 10, 25, 50],
+                                                    language: {
+                                                        emptyTable: "No data available",
+                                                        zeroRecords: "No matching records found"
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+
+                <script>
+                    // Prepare data for the chart
+                    <?php
+                    try {
+                        $stmt = $pdo->query("
+                SELECT reason, COUNT(*) as count
+                FROM tbl_medicine
+                GROUP BY reason
+                ORDER BY count DESC
+            ");
+                        $reasons = [];
+                        $counts = [];
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                            $reasons[] = $row['reason'];
+                            $counts[] = $row['count'];
+                        }
+                    } catch (PDOException $e) {
+                        $reasons = [];
+                        $counts = [];
+                    }
+                    ?>
+
+                    // Create the chart
+                    const ctx = document.getElementById('reasonChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: <?php echo json_encode($reasons); ?>,
+                            datasets: [{
+                                label: 'Number of Cases',
+                                data: <?php echo json_encode($counts); ?>,
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                </script>
+
+
+            </div>
 
             <div class="page" id="equip">
 
@@ -1703,9 +1935,10 @@ try {
                         // Clear previous search functions
                         $.fn.dataTable.ext.search = [];
 
+                        // Add new search function
                         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                            var itemType = data[1].toLowerCase();
-                            var status = data[3].toLowerCase();
+                            var itemType = data[1].toLowerCase(); // Item Name column
+                            var status = data[3].toLowerCase();  // Status column
 
                             if ((itemTypeFilterValue === "" || itemType === itemTypeFilterValue) &&
                                 (statusFilterValue === "" || status === statusFilterValue)) {
@@ -1720,14 +1953,14 @@ try {
                     function filterTable_status() {
                         var statusFilterValue = document.getElementById("statusFilter").value.toLowerCase();
                         var table = $('#equipmentTable').DataTable();
-                       
+
 
                         // Clear previous search functions
                         $.fn.dataTable.ext.search = [];
 
                         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                            var status = data[3].toLowerCase(); 
-                    
+                            var status = data[3].toLowerCase();
+
                             if ((statusFilterValue === "" || status === statusFilterValue)) {
                                 return true;
                             }
@@ -1735,10 +1968,14 @@ try {
                         });
 
                         table.draw();
-                    }   
+                    }
 
                     $(document).ready(function () {
-                        $('#equipmentTable').DataTable({
+                        // Disable DataTables error alerts
+                        $.fn.dataTable.ext.errMode = 'none';
+
+                        // Initialize DataTable
+                        var table = $('#equipmentTable').DataTable({
                             paging: true,
                             searching: true,
                             ordering: true,
@@ -1797,112 +2034,112 @@ try {
                     </tbody>
                 </table>
 
-                <div  style="margin-top: 20px;">
+                <div style="margin-top: 20px;">
 
-                <h2 style="color: black;">Borrow Record</h2>
+                    <h2 style="color: black;">Borrow Record</h2>
 
-                <select id="status_filter" class="form-select" required onchange="status()">
-                    <option value="">--Select Status--</option>
-                    <?php
-                    try {
-                        // Query to fetch distinct statuses from borrow_records
-                        $stmt = $pdo->prepare("SELECT DISTINCT status FROM borrow_records");
-                        $stmt->execute();
-
-                        // Fetch and populate the select options
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            echo '<option value="' . htmlspecialchars($row['status']) . '">' . htmlspecialchars($row['status']) . '</option>';
-                        }
-                    } catch (PDOException $e) {
-                        echo '<option value="">Error fetching statuses</option>';
-                    }
-                    ?>
-                </select>
-                <script>
-                function status() {
-                        var statusValue = document.getElementById("status_filter").value.toLowerCase();
-                        var table = $('#borrowedItemsTable').DataTable();
-                       
-                        // Clear previous search functions
-                        $.fn.dataTable.ext.search = [];
-
-                        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                            var status = data[7].toLowerCase(); 
-                    
-                            if ((statusValue === "" || status === statusValue)) {
-                                return true;
-                            }
-                            return false;
-                        });
-
-                        table.draw();
-                    }   
-                    </script>
-                <table id="borrowedItemsTable" class="display table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee ID</th> 
-                            <th>Employee Name</th>
-                            <th>Item No.</th>
-                            <th>Item Name</th>
-                            <th>Borrow Date</th>
-                            <th>Return Date</th>
-                            <th>Status</th>
-                            <th>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <select id="status_filter" class="form-select" required onchange="status()">
+                        <option value="">--Select Status--</option>
                         <?php
                         try {
-                            // Corrected query
-                            $stmt = $pdo->prepare("SELECT br.id, e.name AS name, e.emp_id, e.emp_no, br.item_no, br.item_name, br.borrow_date, br.return_date, br.status, br.quantity
-                           FROM borrow_records br
-                           JOIN employees e ON br.emp_id = e.emp_id");
+                            // Query to fetch distinct statuses from borrow_records
+                            $stmt = $pdo->prepare("SELECT DISTINCT status FROM borrow_records");
                             $stmt->execute();
 
-                            // Fetch all rows as an associative array
-                            $borrowedData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                            // Check if data exists
-                            if (!empty($borrowedData)) {
-                                foreach ($borrowedData as $item) {
-                                    echo '<tr>';
-                                    echo '<td>' . htmlspecialchars($item['id']) . '</td>';
-                                    echo '<td>' . htmlspecialchars($item['emp_no']) . '</td>';
-                                    echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', htmlspecialchars($item['name'])) . '</td>'; // Fixed
-                                    echo '<td>' . htmlspecialchars($item['item_no']) . '</td>'; // Fixed
-                                    
-                                    echo '<td>' . htmlspecialchars($item['item_name']) . '</td>';
-                                    echo '<td>' . htmlspecialchars($item['borrow_date']) . '</td>';
-                                    echo '<td>' . (isset($item['return_date']) ? htmlspecialchars($item['return_date']) : 'N/A') . '</td>';
-                                    echo '<td>' . htmlspecialchars($item['status']) . '</td>';
-                                    echo '<td>' . (isset($item['quantity']) ? htmlspecialchars($item['quantity']) : 'N/A') . '</td>';
-                                    echo '</tr>';
-                                }
-                            } else {
-                                echo '<tr><td colspan="7" class="text-center">No records found</td></tr>';
+                            // Fetch and populate the select options
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                echo '<option value="' . htmlspecialchars($row['status']) . '">' . htmlspecialchars($row['status']) . '</option>';
                             }
                         } catch (PDOException $e) {
-                            echo '<tr><td colspan="7" class="text-center">Error fetching data: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            echo '<option value="">Error fetching statuses</option>';
                         }
                         ?>
-                    </tbody>
-                </table>
+                    </select>
+                    <script>
+                        function status() {
+                            var statusValue = document.getElementById("status_filter").value.toLowerCase();
+                            var table = $('#borrowedItemsTable').DataTable();
 
-                <script>
-                    $(document).ready(function() {
-                        $.fn.dataTable.ext.errMode = 'none'; // Disable DataTables error alerts
-                        $('#borrowedItemsTable').DataTable({
-                            "language": {
-                                "emptyTable": "No records available",
-                                "zeroRecords": "No matching records found"
+                            // Clear previous search functions
+                            $.fn.dataTable.ext.search = [];
+
+                            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                                var status = data[7].toLowerCase();
+
+                                if ((statusValue === "" || status === statusValue)) {
+                                    return true;
+                                }
+                                return false;
+                            });
+
+                            table.draw();
+                        }   
+                    </script>
+                    <table id="borrowedItemsTable" class="display table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee ID</th>
+                                <th>Employee Name</th>
+                                <th>Item No.</th>
+                                <th>Item Name</th>
+                                <th>Borrow Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            try {
+                                // Corrected query
+                                $stmt = $pdo->prepare("SELECT br.id, e.name AS name, e.emp_id, e.emp_no, br.item_no, br.item_name, br.borrow_date, br.return_date, br.status, br.quantity
+                           FROM borrow_records br
+                           JOIN employees e ON br.emp_id = e.emp_id");
+                                $stmt->execute();
+
+                                // Fetch all rows as an associative array
+                                $borrowedData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Check if data exists
+                                if (!empty($borrowedData)) {
+                                    foreach ($borrowedData as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['id']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['emp_no']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['item_no']) . '</td>'; // Fixed
+                            
+                                        echo '<td>' . htmlspecialchars($item['item_name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['borrow_date']) . '</td>';
+                                        echo '<td>' . (isset($item['return_date']) ? htmlspecialchars($item['return_date']) : 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['status']) . '</td>';
+                                        echo '<td>' . (isset($item['quantity']) ? htmlspecialchars($item['quantity']) : 'N/A') . '</td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    echo '<tr><td colspan="7" class="text-center">No records found</td></tr>';
+                                }
+                            } catch (PDOException $e) {
+                                echo '<tr><td colspan="7" class="text-center">Error fetching data: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
                             }
-                        });
-                    });
-                </script>
+                            ?>
+                        </tbody>
+                    </table>
 
-</div>
+                    <script>
+                        $(document).ready(function () {
+                            $.fn.dataTable.ext.errMode = 'none'; // Disable DataTables error alerts
+                            $('#borrowedItemsTable').DataTable({
+                                "language": {
+                                    "emptyTable": "No records available",
+                                    "zeroRecords": "No matching records found"
+                                }
+                            });
+                        });
+                    </script>
+
+                </div>
 
             </div>
 
@@ -1922,27 +2159,18 @@ try {
                     </div>
                     <div class="input-group">
                         <label style="color: black;" for="full_name">Name :</label>
-                        <input type="password" id="full_name" name="name" class="input-field" readonly>
+                        <input type="text" id="full_name" name="name" class="input-field" readonly>
 
                     </div>
 
                     <!-- Age and Birthday Row 2-->
 
-                    <div class="input-group">
-                        <label style="color: black;" for="age_input">Age :</label>
-                        <input type="text" id="age_input" name="age_input" class="input-field" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label style="color: black;" for="birthday_input">Birthday :</label>
-                        <input type="password" id="birthday_input" name="bday" class="input-field" readonly>
 
-                    </div>
+                    <input type="hidden" id="age_input" name="age_input" class="input-field" readonly>
 
-                    <!-- Gender and Section/Dept. Row 3-->
-                    <div class="input-group">
-                        <label style="color: black;" for="gender_input">Gender :</label>
-                        <input type="text" id="gender_input" name="gender" class="input-field" readonly>
-                    </div>
+                    <input type="hidden" id="birthday_input" name="bday" class="input-field" readonly>
+                    <input type="hidden" id="gender_input" name="gender" class="input-field" readonly>
+
 
                     <div class="input-group">
                         <label style="color: black;" for="section_input">Section/Department :</label>
@@ -1954,6 +2182,19 @@ try {
                         <label style="color: black;" for="company_input">Company :</label>
                         <input type="text" id="company_input" name="company" class="input-field" readonly>
                     </div>
+                   
+                    <div class="input-group">
+
+                        <button class="fas fa-times" type="button" onclick="clearForm()" style="margin-left: 10px; margin-top:40px; background-color: #8B0000; padding: 10px; color: white; 
+                                text-decoration: none; border-radius: 5px;">
+                        </button>
+
+                        <a href="export_all_tables.php" class="fas fa-file-excel" style="margin-left: 10px; margin-top:40px; background-color: #8B0000; padding: 10px; color: white; 
+                                text-decoration: none; border-radius: 5px;">
+                            Export to Excel
+                        </a>
+                       
+                    </div>
 
 
                 </div>
@@ -1963,26 +2204,21 @@ try {
                     function searchUser() {
                         const emp = document.getElementById('emp_number').value;
 
-
-                        // Ensure the emp field isn't empty before proceeding
                         if (!emp) {
                             alert("Please enter Employee No.");
                             return;
                         }
 
-                        // Perform an asynchronous request to the server
                         const xhr = new XMLHttpRequest();
                         xhr.open('GET', 'fetch_scan.php?emp_no=' + encodeURIComponent(emp), true);
 
                         xhr.onload = function () {
                             if (xhr.status === 200) {
-                                console.log('Response:', xhr.responseText); // Debug server response
                                 try {
                                     const userData = JSON.parse(xhr.responseText);
 
-                                    // Update fields with received data
                                     if (userData.error) {
-                                        alert(userData.error); // Handle the case where no user is found
+                                        alert(userData.error);
                                     } else {
                                         document.getElementById('emp_id').value = userData.emp_id || '';
                                         document.getElementById('full_name').value = userData.name || '';
@@ -1992,6 +2228,8 @@ try {
                                         document.getElementById('gender_input').value = userData.gender || '';
                                         document.getElementById('company_input').value = userData.company || '';
                                     }
+
+                                    saveFormData(); // Save after autofill
                                 } catch (e) {
                                     console.error('Error parsing JSON response:', e);
                                 }
@@ -2007,51 +2245,88 @@ try {
                         xhr.send();
                     }
 
-                    // Add keypress event to detect Enter key
+                    // Save form data to localStorage
+                    function saveFormData() {
+                        const formData = {
+                            emp_number: document.getElementById('emp_number').value,
+                            emp_id: document.getElementById('emp_id').value,
+                            full_name: document.getElementById('full_name').value,
+                            age_input: document.getElementById('age_input').value,
+                            birthday_input: document.getElementById('birthday_input').value,
+                            section_input: document.getElementById('section_input').value,
+                            gender_input: document.getElementById('gender_input').value,
+                            company_input: document.getElementById('company_input').value
+                        };
+                        localStorage.setItem('clinical_form', JSON.stringify(formData));
+                    }
+
+                    // Load saved data from localStorage
+                    function loadFormData() {
+                        const saved = JSON.parse(localStorage.getItem('clinical_form'));
+                        if (saved) {
+                            document.getElementById('emp_number').value = saved.emp_number || '';
+                            document.getElementById('emp_id').value = saved.emp_id || '';
+                            document.getElementById('full_name').value = saved.full_name || '';
+                            document.getElementById('age_input').value = saved.age_input || '';
+                            document.getElementById('birthday_input').value = saved.birthday_input || '';
+                            document.getElementById('section_input').value = saved.section_input || '';
+                            document.getElementById('gender_input').value = saved.gender_input || '';
+                            document.getElementById('company_input').value = saved.company_input || '';
+                        }
+                    }
+
+                    // Clear form and localStorage
+                    function clearForm() {
+                        localStorage.removeItem('clinical_form');
+                        document.querySelectorAll('#form_section input').forEach(input => {
+                            input.value = '';
+                        });
+                    }
+
+                    // Handle keypress (Enter key) on Employee No. field
                     document.getElementById('emp_number').addEventListener('keypress', function (event) {
                         if (event.key === 'Enter') {
-                            event.preventDefault(); // Prevent form submission
-                            searchUser(); // Call the function to fetch and auto-fill data
+                            event.preventDefault();
+                            searchUser();
                         }
                     });
 
+                    // Real-time table filter based on Employee No.
                     document.getElementById('emp_number').addEventListener('input', function () {
                         const searchValue = this.value.trim();
-                        const tables = document.querySelectorAll('table:not(#employeeTable):not(#medicineTable):not(#borrowedItemsTable):not(#equipmentTable)'); // Select all tables
+                        const tables = document.querySelectorAll('table:not(#employeeTable):not(#medicineTable)');
 
                         tables.forEach(table => {
-                            console.log("Checking table:", table.id); // Debugging
-
                             const tableRows = table.querySelectorAll('tbody tr');
 
                             tableRows.forEach(row => {
                                 let empNoCell = null;
 
-                                // Try to find Employee No. column dynamically
                                 row.querySelectorAll('td').forEach(td => {
-                                    if (!empNoCell && /\d+/.test(td.textContent.trim())) { // Check if it contains a number
+                                    if (!empNoCell && /\d+/.test(td.textContent.trim())) {
                                         empNoCell = td;
                                     }
                                 });
 
                                 if (empNoCell) {
                                     const empNoText = empNoCell.textContent.trim();
-                                    console.log("Employee No. Found:", empNoText); // Debugging
-
                                     if (searchValue === '' || empNoText.includes(searchValue)) {
-                                        row.style.display = ''; // Show matching row
+                                        row.style.display = '';
                                     } else {
-                                        row.style.display = 'none'; // Hide non-matching row
+                                        row.style.display = 'none';
                                     }
-                                } else {
-                                    console.log("No Employee No. found in row:", row);
                                 }
                             });
                         });
+
+                        saveFormData(); // Save form data as user types
                     });
 
+                    // Save form before unload
+                    window.addEventListener('beforeunload', saveFormData);
 
-
+                    // Load form on page load
+                    window.addEventListener('load', loadFormData);
                 </script>
 
                 <!-- Tabs -->
@@ -2068,6 +2343,7 @@ try {
                     <button class="tab-button" onclick="openTabContent(event, 'special_case_tab')">Special Case</button>
                     <button class="tab-button" onclick="openTabContent(event, 'incident_report_tab')">Incident Accident
                         Report</button>
+                    <button class="tab-button" onclick="openTabContent(event, 'vehicular_accident_tab')">Vehicular Accident</button>
                 </div>
 
                 <!-- Tab Contents -->
@@ -2141,10 +2417,10 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['f_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . (!empty($item['time']) ? date("h:i A", strtotime($item['time'])) : 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['nfa'] ?? 'N/A') . ' day/s </td>';
@@ -2309,7 +2585,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name'] . ' ' . $item['guest_name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? $item['guest_name']) . '</td>';
                                         echo '<td>' . htmlspecialchars($item['med_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
@@ -2373,6 +2649,7 @@ try {
                                 <th>Time</th>
                                 <th>Blood Pressure</th>
                                 <th>Temperature</th>
+                                <th>Sugar Reading</th>
                                 <th>Pulse Rate</th>
                                 <th>Respiratory</th>
                                 <th>Oxygen Level</th>
@@ -2410,12 +2687,13 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['vt_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['time'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . (!empty($item['time']) ? date("h:i A", strtotime($item['time'])) : 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['bp'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['temp'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['sugar'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['pr'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['rr'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['ol'] ?? 'N/A') . '</td>';
@@ -2465,11 +2743,7 @@ try {
                         style="background-color: green; font-weight: bold; margin-bottom: 10px;">
                         New Consultation
                     </button>
-                    <!--recycle
-                    <a href="export_patient_record.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
-                        text-decoration: none; border-radius: 5px;">
-                        Export to Excel
-                    </a>-->
+
                     <div class="filter" style="float: right; display: inline-flex; align-items: center;">
                     </div>
 
@@ -2527,7 +2801,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['cons_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
 
@@ -2602,9 +2876,12 @@ try {
                                 <th>Date of Visit</th>
                                 <th>Time of Visit</th>
                                 <th>Chief Complaint</th>
+                                <th>Findings</th>
+                                <th>Endorsed</th>
                                 <th>Time of Released</th>
                                 <th>Total Hours Confined</th>
                                 <th>Remarks</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr> <!-- Added missing closing </tr> -->
                         </thead>
@@ -2633,14 +2910,17 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['con_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_of_visit'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['time_of_visit'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . (!empty($item['time_of_visit']) ? date("h:i A", strtotime($item['time_of_visit'])) : 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['chief_complaint'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['findings'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['endorsed'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['time_of_released'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['total_hrs'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['status'] ?? 'N/A') . '</td>';
                                         echo '<td class="text-center">';
                                         echo '<a href="edit_confine.php?emp_id=' . $item['emp_id'] . '&con_id=' . $item['con_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
                                         echo '<a href=delete_confine.php?con_id=' . htmlspecialchars($item['con_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
@@ -2688,6 +2968,7 @@ try {
                                 <th>Name</th>
                                 <th>ID</th>
                                 <th>Reason</th>
+                                <th>Date</th>
                                 <th>Assessment</th>
                                 <th>Diagnosis</th>
                                 <th>Remarks</th>
@@ -2715,7 +2996,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_senthome LEFT JOIN employees ON tbl_senthome.emp_id = employees.emp_id ORDER BY employees.emp_id ASC");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_senthome LEFT JOIN employees ON tbl_senthome.emp_id = employees.emp_id ORDER BY employees.emp_id DESC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2726,9 +3007,10 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['sh_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['assessment'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['diagnosis'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
@@ -2787,11 +3069,12 @@ try {
                                 <th>EDC</th>
                                 <th>Date Submited</th>
                                 <th>Remarks</th>
+                                <th>OB Score</th>
                                 <th>Start Leave</th>
                                 <th>Leave End</th>
                                 <th>Note</th>
                                 <th>Back to Work</th>
-                                <th>Arpron Date Released</th>
+                                <th>Apron Date Released</th>
                                 <th>Date Arpon Returned</th>
                                 <th>Chair Released</th>
                                 <th>Date of Chair Returned</th>
@@ -2812,7 +3095,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_pregnant_notif LEFT JOIN employees ON tbl_pregnant_notif.emp_id = employees.emp_id ORDER BY tbl_pregnant_notif.date_sub ASC");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_pregnant_notif LEFT JOIN employees ON tbl_pregnant_notif.emp_id = employees.emp_id ORDER BY tbl_pregnant_notif.date_sub DESC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2823,11 +3106,12 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['pn_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['edc'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date_sub'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['ob_score'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['start_leave'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['l_end'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['note'] ?? 'N/A') . '</td>';
@@ -2910,7 +3194,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_specialcase LEFT JOIN employees ON tbl_specialcase.emp_id = employees.emp_id ORDER BY tbl_specialcase.date ASC");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_specialcase LEFT JOIN employees ON tbl_specialcase.emp_id = employees.emp_id ORDER BY tbl_specialcase.date DESC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -2921,7 +3205,7 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars(str_pad($item['sc_id'] ?? 'N/A', 6, '0', STR_PAD_LEFT)) . '</td>';
 
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
@@ -2987,6 +3271,8 @@ try {
                                 <th>Nature of incident</th>
                                 <th>Part of the body Affected</th>
                                 <th>Remarks</th>
+                                <th>Immediate Action</th>
+                                <th>Treatment</th>
                                 <th>Status</th>
                                 <th>Days Lost</th>
                                 <th>Date of Absence</th>
@@ -3008,7 +3294,7 @@ try {
                                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                                 // Query to fetch data from the "tbl_confinement" table and join it with the "employees" table
-                                $stmt = $pdo->prepare("SELECT * FROM tbl_incident_report LEFT JOIN employees ON tbl_incident_report.emp_id = employees.emp_id ORDER BY tbl_incident_report.date ASC");
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_incident_report LEFT JOIN employees ON tbl_incident_report.emp_id = employees.emp_id ORDER BY tbl_incident_report.ir_id DESC");
                                 $stmt->execute();
 
                                 // Fetch all rows as an associative array
@@ -3019,15 +3305,17 @@ try {
                                     foreach ($data as $item) {
                                         echo '<tr>';
                                         echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['ir_id'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['date'] ?? 'N/A') . '</td>';
-                                        echo '<td>' . htmlspecialchars($item['time_i'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . (!empty($item['time_i']) ? date("h:i A", strtotime($item['time_i'])) : 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['place_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['nature_i'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['part_b_a'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
-                                        echo '<td style = "background-color:#0044cc; color: white; font-weight: bold; border-bottom: 1px solid black;">' . htmlspecialchars($item['status_'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['i_action'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['treatment'] ?? 'N/A') . '</td>';
+                                        echo '<td >' . htmlspecialchars($item['status_'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['d_lost'] ?? 'N/A') . '</td>';
                                         echo '<td>' . htmlspecialchars($item['d_absence'] ?? 'N/A') . '</td>';
 
@@ -3077,6 +3365,103 @@ try {
                     </script>
                 </div>
                 <!-- end incident report tab-->
+
+                <!-- Vehicular Accident -->
+                <div id="vehicular_accident_tab" class="tab-content" style="max-height: 400px; overflow-y: auto;">
+                <h3 style="color: black;">Incident Accident Report</h3>
+                    <button class="fas fa-plus"
+                        onclick="window.location.href='vehicular_accident.php?emp_id=' + document.getElementById('emp_id').value;"
+                        style="background-color: green; margin-bottom: 10px;">New Record</button>
+                    <table id="vehicular_accident" class="table table-striped table-bordered" style="width:100%;">
+                        <thead class="thead-dark">
+                            <tr class="med">
+                                <th>Employee No.</th>
+                                <th>Name</th>
+                                <th>ID</th>
+                                <th>Filing Date</th>
+                                <th>Date of Accident</th>
+                                <th>Time of Incident</th>
+                                <th>Reason</th>
+                                <th>Type of Vehicle</th>
+                                <th>Remarks</th>
+                                <th>Nurse on Duty</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Days Lost</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Database connection settings
+                            $host = 'localhost';
+                            $db = 'e_system';
+                            $user = 'root';
+                            $pass = '';
+
+                            try {
+                                // Create PDO instance
+                                $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                                // Query to fetch data from the "tbl_vehicle_accident" table and join it with the "employees" table
+                                $stmt = $pdo->prepare("SELECT * FROM tbl_vehicle_accident LEFT JOIN employees ON tbl_vehicle_accident.emp_id = employees.emp_id ORDER BY tbl_vehicle_accident.va_id DESC");
+                                $stmt->execute();
+
+                                // Fetch all rows as an associative array
+                                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                // Check if data exists
+                                if ($data) {
+                                    foreach ($data as $item) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['va_id'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['f_date'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['date_incident'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . (!empty($item['time_incident']) ? date("h:i A", strtotime($item['time_incident'])) : 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['reason'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['v_type'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['remarks'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['nod'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['from_'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['to_'] ?? 'N/A') . '</td>';
+                                        echo '<td>' . htmlspecialchars($item['no_days'] ?? 'N/A') . '</td>';
+                                        // Action buttons
+                                        echo '<td class="text-center">';
+                                        echo '<a href="edit_vehicular.php?emp_id=' . $item['emp_id'] . '&va_id=' . $item['va_id'] . '" class="link-dark fas fa-pen-to-square"></a>';
+                                        echo '<a href="delete_vehicular.php?va_id=' . htmlspecialchars($item['va_id']) . '" class="link-dark fas fa-trash" style="margin-left: 10px;"></a>';
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                } else {
+                                    echo '<tr><td colspan="10" class="text-center">No records found</td></tr>';
+                                }
+                            } catch (PDOException $e) {
+                                echo '<tr><td colspan="10" class="text-center">Error: ' . htmlspecialchars($e->getMessage()) . '</td></tr>';
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+
+                    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+                    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+                    <!-- Initialize DataTables -->
+                    <script>
+                        $(document).ready(function () {
+                            $('#vehicular_accident').DataTable({  // Corrected table ID
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        });
+                    </script>
+                </div>
+
+                <!--  End Vehicular Accident -->
 
                 <!-- end tab contents-->
                 <script>
@@ -3144,7 +3529,7 @@ try {
             </div>
 
             <!--PMR-->
-            <div id="patient_mr" class="page active">
+            <div id="patient_mr" class="page">
 
                 <h1 class="text-center" style="color: black;">Patients Medical Record</h1>
 
@@ -3225,9 +3610,6 @@ try {
                                 <tr>
                                     <th>Employee ID</th>
                                     <th>Name</th>
-                                    <th>Age</th>
-                                    <th>Birthdate</th>
-                                    <th>Gender</th>
                                     <th>Department</th>
                                     <th>Company</th>
                                     <th>Action</th>
@@ -3260,10 +3642,7 @@ try {
                                             echo '<tr class="employee-row" data-company="' . htmlspecialchars($item['company']) . '" data-division="' . htmlspecialchars($item['division']) . '">';
 
                                             echo '<td>' . htmlspecialchars($item['emp_no'] ?? 'N/A') . '</td>';
-                                            echo '<td>' . preg_replace('/\b(\w)\w+/i', '$1***', $item['name']) . '</td>';
-                                            echo '<td>' . htmlspecialchars($item['age'] ?? 'N/A') . '</td>';
-                                            echo '<td><span class="sensitive-data" onmouseover="this.textContent=\'' . htmlspecialchars($item['bday'] ?? 'N/A') . '\'" onmouseout="this.textContent=\'******\'">******</span></td>';
-                                            echo '<td>' . htmlspecialchars($item['gender'] ?? 'N/A') . '</td>';
+                                            echo '<td>' . htmlspecialchars($item['name'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['division'] ?? 'N/A') . '</td>';
                                             echo '<td>' . htmlspecialchars($item['company'] ?? 'N/A') . '</td>';
                                             echo '<td class="text-center">';
@@ -3344,12 +3723,12 @@ try {
                 <!-- New Medicine Button -->
                 <button id="toggleForm" onclick="window.location.href='new_med.php';" class="fas fa-pills"
                     style="background-color: green; font-weight: bold; margin-bottom: 15px;"> New Medicine</button>
-                    <!-- 
+
                 <a href="export_med_inventory.php" class="fas fa-file-excel" style="margin-left: 10px; background-color: #8B0000; padding: 10px; color: white; 
                   text-decoration: none; border-radius: 5px;">
                     Export to Excel
                 </a>
-                Export to Excel Button -->
+
                 <!--Count Medicines-->
                 <div class="modal-body">
                     <?php
@@ -3392,8 +3771,12 @@ try {
                             // Subtract quantities
                             $resultQuantity = $medQuantity - $tblQuantity;
 
-                            // Display each item
-                            echo "<div class='item' style='min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color:rgb(0, 0, 0); text-align: center; font-weight:bold; color: white;'>";
+                            // Check if the result quantity is below 25, change background color to red
+                            $backgroundColor = $resultQuantity < 25 ? 'background-color: red;' : 'background-color: rgb(0, 0, 0);';
+                            $refillMessage = $resultQuantity < 25 ? '<p style="color: yellow;">Needs to Refill</p>' : '';
+
+                            // Display each item with dynamic background color
+                            echo "<div class='item' style='min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; $backgroundColor text-align: center; font-weight:bold; color: white;'>";
                             echo htmlspecialchars($medName) . " — " . htmlspecialchars($resultQuantity);
                             echo "</div>";
                         }
@@ -3402,29 +3785,28 @@ try {
                         echo 'Error: ' . $e->getMessage();
                     }
                     ?>
-
-
                 </div>
+
                 <!--Count Medicines-->
                 <div class="filter" style="float: right; display: inline-flex; align-items: center;">
                     <div class="form-row">
 
                         <div class="form-gorup">
-                            <select class="date3" id="date3" name="date3" onchange="filterdate3()"
+                            <select class="date3" id="date3" name="date3" onchange="filterDateByMonth()"
                                 style="margin-left: 0;">
                                 <option value="all">--Set by Month--</option>
-                                <option value="january">January</option>
-                                <option value="february">February</option>
-                                <option value="march">March</option>
-                                <option value="april">April</option>
-                                <option value="may">May</option>
-                                <option value="june">June</option>
-                                <option value="july">July</option>
-                                <option value="august">August</option>
-                                <option value="september">September</option>
-                                <option value="october">October</option>
-                                <option value="november">November</option>
-                                <option value="december">December</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
                             </select>
                         </div>
 
@@ -3491,7 +3873,7 @@ try {
                     <thead>
                         <tr>
                             <th>Medicine</th>
-                            <th>Supply</th>
+                            <th>Expiration Date</th>
                             <th>Quantity</th>
                             <th>Date Received</th>
                             <th>Receiver</th>
@@ -3806,6 +4188,72 @@ try {
                 });
             });
         });
+    </script>
+    <script>
+        function filterDateByMonth() {
+            var selectedMonth = document.getElementById("date3").value;
+            var table = $('#medicineTable').DataTable();
+
+            // Clear previous search functions
+            $.fn.dataTable.ext.search = [];
+
+            // Add new search function for month filtering
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (selectedMonth === "all") {
+                    return true; // Show all rows if "all" is selected
+                }
+
+                var dateStr = data[3];
+
+                var dateParts = dateStr.split('-');
+                if (dateParts.length >= 2) {
+                    var month = dateParts[1];
+                    return month === selectedMonth;
+                }
+
+                return false;
+            });
+
+            table.draw();
+        }
+    </script>
+    <script>
+        function searchRecords() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchFilter = document.getElementById('searchFilter').value;
+            const table = document.querySelector('.table-responsive table');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                let text = '';
+                let match = false;
+
+                if (searchFilter === 'all') {
+                    text = row.textContent.toLowerCase();
+                    match = text.includes(searchInput);
+                } else {
+                    const cells = row.getElementsByTagName('td');
+                    const columnIndex = {
+                        'emp_no': 0,
+                        'name': 1,
+                        'diagnosis': 4,
+                        'company': 3
+                    }[searchFilter];
+
+                    if (cells[columnIndex]) {
+                        text = cells[columnIndex].textContent.toLowerCase();
+                        match = text.includes(searchInput);
+                    }
+                }
+
+                row.style.display = match ? '' : 'none';
+            }
+        }
+
+        // Add event listener for real-time search
+        document.getElementById('searchInput').addEventListener('keyup', searchRecords);
+        document.getElementById('searchFilter').addEventListener('change', searchRecords);
     </script>
 </body>
 
